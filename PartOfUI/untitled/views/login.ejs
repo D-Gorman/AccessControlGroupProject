@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="./stylesheets/login.css"/>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <div class="contain">
+        <div class="loginTop"></div>
+        <div class="loginBody">
+            <div class="loginDiv">
+                <div class="loginIn"></div>
+<!--                <form name="loginform" class="loginForm" id="loginForm" action="http://localhost:8082/process_get" method="GET">-->
+                <form name="loginform" class="loginForm" id="loginForm" method="post">
+                    <ul>
+                        <li>
+                            <input name="InfoId" type="text" class="InfoId" value="ID" readonly="readonly">
+                        </li>
+                        <li>
+                            <input name="userId" type="text" class="loginUser" value="" placeholder="What's your id:" maxlength="20" id="userId">
+                        </li>
+                        <li>
+                            <input name="InfoPwd" type="text" class="InfoPwd" value="PASSWORD" readonly="readonly">
+                        </li>
+                        <li>
+                            <input name="password" type="password" class="loginPwd" value="" placeholder="What's your password:" maxlength="100" id="password">
+                        </li>
+                        <li>
+                            <input name="continueBtn" type="submit" class="loginBtn" id="continueBtn" value="CONTINUE">
+<!--                            <input name="continueBtn" type="submit" class="loginBtn" id="continueBtn" value="CONTINUE" onclick="myfunc()">-->
+                        </li>
+                    </ul>
+                    <div id="show" class="show"></div>
+                </form>
+            </div>
+        </div>
+        <div class="loginBottom"></div>
+    </div>
+
+<!--    <script>-->
+<!--        function myfunc() {-->
+<!--            var txt;-->
+<!--            if (confirm("Press a button!")) {-->
+<!--                txt = "您按了确定";-->
+<!--            } else {-->
+<!--                txt = "您按了取消";-->
+<!--            }-->
+<!--            document.getElementById("demo").innerHTML = txt;-->
+<!--        }-->
+<!--    </script>-->
+    <script>
+        let failure;
+        failure = "<%= flag %>";
+        if(failure == 1) document.getElementById("show").innerText = "Login Failed！";
+        if(failure == 2) document.getElementById("show").innerText = "ID and PASSWORD cannot be null.";
+    </script>
+</body>
+</html>

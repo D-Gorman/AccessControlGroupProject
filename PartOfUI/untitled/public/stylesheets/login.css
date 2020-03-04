@@ -1,0 +1,125 @@
+* {
+    font-size: 12pt;
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-image: url(../images/login/background.jpg);
+    background-repeat: no-repeat;
+    background-position: center top;
+}
+
+.contain {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.loginTop {
+    width: 100%;
+    height: 20px;
+}
+
+.loginBody {
+    width: 100%;
+    height: 700px;
+}
+
+.loginDiv {
+    background-image: url(../images/login/loginTable.png);
+    background-repeat: no-repeat;
+    margin-left: 50%;
+    padding-top: 10%;
+    width: 552px;
+    height: 676px;
+}
+
+.loginIn {
+    background-image: url(../images/login/loginIn.png);
+    background-repeat: no-repeat;
+    margin-left: 25%;
+    padding-bottom: 5%;
+    width: 120px;
+    height: 32px;
+}
+
+.loginForm {
+    height: 360px;
+    width: 276px;
+    margin-left: 25%;
+    /*border-style: solid;
+    border-width: 1px;*/
+}
+
+.loginForm ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.loginForm ul li {
+    margin: 0;
+    list-style: none;
+    /*padding-left: 20px;*/
+}
+
+.InfoId {
+    font-size: 14px;
+    font-weight: bolder;
+    width: 300px; height: 40px;
+}
+
+.loginUser {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: darkgray;
+    width: 250px;
+    height: 30px;
+}
+
+.InfoPwd {
+    font-size: 14px;
+    font-weight: bolder;
+    width: 300px; height: 40px;
+    padding-top: 50px;
+}
+
+.loginPwd {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: darkgray;
+    width: 250px;
+    height: 30px;
+}
+
+.loginBtn {
+    background-color: #9775e5;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bolder;
+    color: aliceblue;
+    width: 180px;
+    height: 50px;
+    cursor: pointer;
+    box-shadow: 0 5px #999999;
+    margin-left: 30%;
+    margin-top: 30%;
+}
+
+.loginBtn:hover {
+    background-color: darkorange;
+}
+
+.loginBtn:active {
+    background-color: darkorange;
+    box-shadow: 0 1px #666;
+    transform: translateY(4px);
+}
+
+.show {
+    align-content: center;
+    margin-top: 10%;
+    color: red;
+}
