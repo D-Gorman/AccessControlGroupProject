@@ -65,6 +65,13 @@ body {
     /*padding-left: 20px;*/
 }
 
+label {
+    padding: 18px 12px 36px 0;
+    display: inline-block;
+    font-size: 14pt;
+    font-weight: bolder;
+}
+
 .InfoId {
     font-size: 14px;
     font-weight: bolder;

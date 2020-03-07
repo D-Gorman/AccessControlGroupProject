@@ -2,17 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="stylesheets/MainPageNavigationBar.css" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pagesOfRole.css" />"
-    <title>Occupant</title>
+    <!--    <meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./stylesheets/MainPageNavigationBar.css" />
+    <link rel="stylesheet" type="text/css" href="./stylesheets/pagesOfRole.css" />
+    <title>user main page</title>
 </head>
 <body>
 <div class="contain">
     <div class="container-fluid">
         <ul>
-            <li class="active"><li><a href="occupant">occupant</a></li>
-            <li><a href="UpData">UpData Form</a></li>
-            <li style="float:right"><a href="logout">logout</a></li>
+            <li class="active"><a href="DataRequestForm.ejs">Data Request Form Page</a></li>
+            <li><a href="Logging.ejs">Logging</a></li>
+            <li><a href="RoomSituation.ejs">Room Occupancy situation</a></li>
+            <li style="float:right"><a href="logintext.ejs">logout</a></li>
         </ul>
     </div>
     <div class="pagesBody">
@@ -22,7 +25,7 @@
                     <label>UserId</label>
                 </div>
                 <div class="otherCols">
-                    <label>Loc</label>
+                    <label>Role</label>
                 </div>
                 <div class="otherCols">
                     <label>FirstName</label>
@@ -41,9 +44,9 @@
                 <div class="otherCols">
                     <h1><%= policy_opts %></h1>
                 </div>
-<!--                <div class="otherCols">-->
-<!--                    <h1><%= listOfReqs %></h1>-->
-<!--                </div>-->
+                <div class="otherCols">
+                    <h1><%= listOfReqs %></h1>
+                </div>
             </dev>
         </form>
     </div>

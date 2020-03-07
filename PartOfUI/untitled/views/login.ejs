@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="./stylesheets/login.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/login.css"/>
     <meta charset="UTF-8">
     <title>Login</title>
 </head>
@@ -11,17 +11,16 @@
         <div class="loginBody">
             <div class="loginDiv">
                 <div class="loginIn"></div>
-<!--                <form name="loginform" class="loginForm" id="loginForm" action="http://localhost:8082/process_get" method="GET">-->
                 <form name="loginform" class="loginForm" id="loginForm" method="post">
                     <ul>
                         <li>
-                            <input name="InfoId" type="text" class="InfoId" value="ID" readonly="readonly">
+                            <label for="userId">USERID</label>
                         </li>
                         <li>
                             <input name="userId" type="text" class="loginUser" value="" placeholder="What's your id:" maxlength="20" id="userId">
                         </li>
                         <li>
-                            <input name="InfoPwd" type="text" class="InfoPwd" value="PASSWORD" readonly="readonly">
+                            <label for="password">PASSWORD</label>
                         </li>
                         <li>
                             <input name="password" type="password" class="loginPwd" value="" placeholder="What's your password:" maxlength="100" id="password">
@@ -37,18 +36,6 @@
         </div>
         <div class="loginBottom"></div>
     </div>
-
-<!--    <script>-->
-<!--        function myfunc() {-->
-<!--            var txt;-->
-<!--            if (confirm("Press a button!")) {-->
-<!--                txt = "您按了确定";-->
-<!--            } else {-->
-<!--                txt = "您按了取消";-->
-<!--            }-->
-<!--            document.getElementById("demo").innerHTML = txt;-->
-<!--        }-->
-<!--    </script>-->
     <script>
         let failure;
         failure = "<%= flag %>";

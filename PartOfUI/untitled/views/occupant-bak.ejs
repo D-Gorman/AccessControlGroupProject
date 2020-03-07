@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="./stylesheets/occupant.css"/>
+    <meta charset="UTF-8">
+    <title>Occupant</title>
+</head>
+<body>
+    <div class="contain">
+        <div class="pagesTop"></div>
+        <div class="pagesBody">
+                <form name="infoForm" class="infoForm" id="infoForm" method="GET">
+                    <ul>
+                        <li>
+                            <div class="left">
+                                <input name="occ_id" type="text" class="info_title" value="ID:" readonly="readonly">
+                            </div>
+                            <div class="right">
+                                <h1><%= valueOfId %></h1>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="left">
+                                <input name="loc" type="text" class="info_title" value="Location:" readonly="readonly">
+                            </div>
+                            <div class="right">
+                                <h1><%= valueOfLoc %></h1>
+                            </div>
+                        </li>
+                        <li>
+                            <div name="policy_opts" class="policy_opts">
+                                <h1><%= policy_opts %></h1>
+                            </div>
+                        </li>
+                        <li>
+                            <div name="listOfReqs" class="listOfReqs">
+                                <h1><%= listOfReqs %></h1>
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+        </div>
+        <div class="pagesBottom"></div>
+    </div>
+</body>
+</html>
+
+

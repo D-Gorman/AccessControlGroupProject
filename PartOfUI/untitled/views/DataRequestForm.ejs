@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/DataFrom.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/MainPageNavigationBar.css" />
+    <title>Form</title>
+</head>
+<body>
+<div class="contain">
+    <div class="container-fluid">
+        <ul>
+            <li class="active"><a href="DataRequestForm">Data Request Form Page</a></li>
+            <li><a href="log">Logging</a></li>
+            <li><a href="RoomSituation">Room Occupancy situation</a></li>
+            <li style="float:right"><a href="LoginText">logout</a></li>
+        </ul>
+    </div>
+    <div class="pagesBody">
+        <form id="formId" action="" method="GET">
+            <div class="row">
+                <div class="col-30">
+                    <label for="userId">UserId</label>
+                </div>
+                <div class="col-70">
+                    <input type="text" id="userId" name="userId" placeholder="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="role">Role</label>
+                </div>
+                <div class="col-70">
+                    <input type="text" id="role" name="role" placeholder="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="fname">First Name</label>
+                </div>
+                <div class="col-70">
+                    <input type="text" id="fname" name="firstname" placeholder="Your name..">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="lname">Last Name</label>
+                </div>
+                <div class="col-70">
+                    <input type="text" id="lname" name="lastname" placeholder="Your last name..">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="email">Email</label>
+                </div>
+                <div class="col-70">
+                    <input type="text" id="email" name="email" placeholder="Your email..">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="association">Association</label>
+                </div>
+                <div class="col-70">
+                    <input type="text" id="association" name="association" placeholder="Your association..">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label>Data required</label>
+                </div>
+                <div class="col-70">
+                    <form action="">
+                        Please select the data what you need:<br/><br/>
+                        <label><input type="checkbox" name="datarequired" value=""/>Actual Cooling Set point</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Actual Heating Set point</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>CO2</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Cooling Valve Position</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Heating Valve Position</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Light Power Level</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Mode</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Mode Input</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Occupancy Sensor</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Relative Humidity</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Room Brightness</label>
+                        <label><input type="checkbox" name="datarequired" value=""/>Room Temperature</label>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="dlocation">Data location</label>
+                </div>
+                <div class="col-70">
+                    <input type="text" id="dlocation" name="datalocation" placeholder="Your location...">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="datechoose">Date</label>
+                </div>
+                <div class="col-70">
+                    <input id="datechoose" name="datechoose" type="date" onclick=alert("xixiguan") /> — <input id="datestring" name="datestring" type="date" onchange="isDate(this.value)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="country">Country</label>
+                </div>
+                <div class="col-70">
+                    <select id="country" name="country">
+                        <option value="australia">Australia</option>
+                        <option value="canada">Canada</option>
+                        <option value="usa">USA</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="reason">Reason</label>
+                </div>
+                <div class="col-70">
+                    <textarea id="reason" name="reason" placeholder="Write something.." style="height:200px"></textarea>
+                </div>
+            </div>
+            <div class="row" style="text-align: center">
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

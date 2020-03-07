@@ -1,11 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <meta charset="UTF-8">
+    <!--    <meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/MainPageNavigationBar.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/pagesOfRole.css" />
+    <title>user main page <%= title %> </title>
 </head>
 <body>
-<h1><%= title %></h1>
-<p>Welcome to <%= title %></p>
+<div class="contain">
+    <div class="container-fluid">
+        <ul>
+            <li class="active"><a href="DataRequestForm">Data Request Form Page</a></li>
+            <li><a href="log">Logging</a></li>
+            <li><a href="RoomSituation">Room Occupancy situation</a></li>
+            <li style="float:right"><a href="logout.ejs">logout</a></li>
+        </ul>
+    </div>
+    <div class="pagesBody">
+        <form name="infoForm" class="infoForm" id="infoForm" method="GET">
+            <dev class="left">
+                <div class="firstCols">
+                    <label>UserId</label>
+                </div>
+                <div class="otherCols">
+                    <label>Role</label>
+                </div>
+                <div class="otherCols">
+                    <label>FirstName</label>
+                </div>
+                <div class="otherCols">
+                    <label>LastName</label>
+                </div>
+            </dev>
+            <dev class="right">
+
+            </dev>
+        </form>
+    </div>
+    <div class="pagesBottom"></div>
+</div>
 </body>
 </html>
