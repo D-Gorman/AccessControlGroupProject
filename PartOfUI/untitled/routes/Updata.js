@@ -16,7 +16,7 @@ getRouter.get('/Updata', function (req, res) {
     console.log(req.cookies);
     if(req.cookies.authorized) {
         var name = req.cookies.authorized;
-        res.render('Updata', {title: name});
+        res.render('Updata', {valueOfID: name});
     }
     // } else {
     //     res.redirect('/login');

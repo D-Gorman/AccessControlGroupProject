@@ -27,7 +27,6 @@
                         </li>
                         <li>
                             <input name="continueBtn" type="submit" class="loginBtn" id="continueBtn" value="CONTINUE">
-<!--                            <input name="continueBtn" type="submit" class="loginBtn" id="continueBtn" value="CONTINUE" onclick="myfunc()">-->
                         </li>
                     </ul>
                     <div id="show" class="show"></div>
@@ -37,8 +36,7 @@
         <div class="loginBottom"></div>
     </div>
     <script>
-        let failure;
-        failure = "<%= flag %>";
+        let failure = "<%= flag %>";
         if(failure == 1) document.getElementById("show").innerText = "Login Failed！";
         if(failure == 2) document.getElementById("show").innerText = "ID and PASSWORD cannot be null.";
     </script>

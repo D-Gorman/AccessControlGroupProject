@@ -2,19 +2,12 @@ const express = require('express');
 const getRouter = express.Router();
 
 const mysql = require('mysql');
-// var connection = mysql.createConnection({
-//     host: '127.0.0.1',
-//     user: 'root',
-//     password: 'mysql',
-//     database: 'loginInfo'
-// });
-
 const pool = mysql.createPool({
     connectionLimit: 100,
     host:     '127.0.0.1',
     user:     'root',
     password: 'mysql',
-    database: 'loginInfo'
+    database: 'usbaccess'
 });
 
 
@@ -25,10 +18,10 @@ getRouter.get('/occupant', function (req, res) {
         var name = req.cookies.authorized;
 
         var message = getLocationInfo(name, function(json_1) {
-            //res.render('occupant', {valueOfId: name, valueOfLoc: json.location, policy_opts: json.policy});
-            var message = getHistLog(json_1.location, function(json_2) {
-                res.render('occupant', {valueOfId: name, valueOfLoc: json_1.location, policy_opts: json_1.policy, listOfReqs: json_2});
-            })
+            res.render('occupant', {valueOfId: name, valueOfLoc: json_1.location});
+            // var message = getHistLog(json_1.location, function(json_2) {
+            //     res.render('occupant', {valueOfId: name, valueOfLoc: json_1.location, listOfReqs: json_2});
+            // })
         })
     } else {
         res.redirect('/login');
@@ -46,19 +39,19 @@ function getLocationInfo(name, callback) {
         if (error) throw error;
 
         //Search the database according to the userId.
-        var sql = 'SELECT * FROM test_2 WHERE userId = "' + name + '";';
+        var sql = 'SELECT * FROM occupant WHERE user_id = "' + name + '";';
         console.log(sql);
         connection.query(sql, function(err, result) {
 
             if (err) {
-                console.log('-------------------- Error to Find Location --------------------');
+                console.log('-------------------- Error --------------------');
                 console.log(err);
                 throw err;
             } else if (result.length == 0) {
-                console.log('Login Error: Please enter a correct userId.');
+                console.log('-------------------- No relevant records --------------------');
                 return;
             } else {
-                console.log('-------------------- Location Information --------------------');
+                console.log('-------------------- Succeed: Get Location Information --------------------');
                 //转换json
                 var message = JSON.stringify(result);
                 message = JSON.parse(message);
@@ -73,38 +66,39 @@ function getLocationInfo(name, callback) {
     });
 }
 
-function getHistLog(loc, callback) {
-    //connection.connect();
-
-    pool.getConnection((error, connection) => {
-
-        console.log("-------------------- Occupant: Get a db connection from the pool to search previous log --------------------");
-        if (error) throw error;
-
-        //Search the database according to the location.
-        var sql_1 = 'SELECT * FROM test_2_logs WHERE location = "' + loc + '";';
-        console.log(sql_1);
-        connection.query(sql_1, function (err, result) {
-
-            if (err) {
-                console.log('-------------------- Error to Find Log --------------------');
-                console.log(err);
-                return;
-            } else if (result.length == 0) {
-                console.log('Error: Please enter a correct location.');
-                return;
-            } else {
-                console.log('-------------------- Log Information --------------------');
-                //转换json
-                var message = JSON.stringify(result);
-                //message = JSON.parse(message);
-                console.log(message);
-                callback(message);
-            }
-            console.log('-------------------- *************** --------------------\n\n');
-        });
-        //connection.end();
-        connection.release();
-        console.log("-------------------- Occupant: Release the db connection --------------------");
-    });
-}
+//
+// function getHistLog(loc, callback) {
+//     //connection.connect();
+//
+//     pool.getConnection((error, connection) => {
+//
+//         console.log("-------------------- Occupant: Get a db connection from the pool to search previous log --------------------");
+//         if (error) throw error;
+//
+//         //Search the database according to the location.
+//         var sql_1 = 'SELECT * FROM log WHERE location = "' + loc + '";';
+//         console.log(sql_1);
+//         connection.query(sql_1, function (err, result) {
+//
+//             if (err) {
+//                 console.log('-------------------- Error to Find Log --------------------');
+//                 console.log(err);
+//                 return;
+//             } else if (result.length == 0) {
+//                 console.log('Error: Please enter a correct location.');
+//                 return;
+//             } else {
+//                 console.log('-------------------- Log Information --------------------');
+//                 //转换json
+//                 var message = JSON.stringify(result);
+//                 //message = JSON.parse(message);
+//                 console.log(message);
+//                 callback(message);
+//             }
+//             console.log('-------------------- *************** --------------------\n\n');
+//         });
+//         //connection.end();
+//         connection.release();
+//         console.log("-------------------- Occupant: Release the db connection --------------------");
+//     });
+// }

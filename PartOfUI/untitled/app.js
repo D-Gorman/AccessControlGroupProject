@@ -14,7 +14,7 @@ const jump = require('./routes/jump');
 const DataRequestForm = require('./routes/DataRequestForm');
 const Log = require('./routes/log');
 const UpData = require('./routes/UpData');
-const RoomSituation = require('./routes/RoomSituation');
+const logout = require('./routes/logout');
 
 
 const app = express();
@@ -35,9 +35,10 @@ app.use(occupant.get);
 app.use(researcher.get);
 app.use(jump.get);
 app.use(DataRequestForm.get);
+app.use(DataRequestForm.post);
 app.use(Log.get);
 app.use(UpData.get);
-app.use(RoomSituation.get);
+app.use(logout.get);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -54,7 +55,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
 
 module.exports = app;

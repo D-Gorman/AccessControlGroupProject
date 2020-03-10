@@ -8,6 +8,7 @@
 body {
     background-image: url(../images/login/background.jpg);
     background-repeat: no-repeat;
+    background-size: 100%;
     background-position: center top;
 }
 

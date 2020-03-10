@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="stylesheets/DataFrom.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/DataForm.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/MainPageNavigationBar.css" />
     <title>Title</title>
 </head>
@@ -12,7 +12,7 @@
         <ul>
             <li class="active"><li><a href="occupant">occupant</a></li>
             <li><a href="UpData">UpData Form</a></li>
-            <li style="float:right"><a href="logintext.html">logout</a></li>
+            <li style="float:right"><a href="logout">logout</a></li>
         </ul>
     </div>
     <div class="pagesBody">
@@ -22,7 +22,7 @@
                     <label for="userId">UserId</label>
                 </div>
                 <div class="col-70">
-                    <input type="text" id="userId" name="userId" placeholder="">
+                    <input type="text" id="userId" name="userId" placeholder="" value="<%= valueOfID %>" readonly="readonly">
                 </div>
             </div>
             <div class="row">

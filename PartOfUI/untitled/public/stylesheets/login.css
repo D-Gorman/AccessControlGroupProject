@@ -8,6 +8,7 @@
 body {
     background-image: url(../images/login/background.jpg);
     background-repeat: no-repeat;
+    background-size: 100%;
     background-position: center top;
 }
 
@@ -127,6 +128,6 @@ label {
 
 .show {
     align-content: center;
-    margin-top: 10%;
+    margin-top: 7%;
     color: red;
 }

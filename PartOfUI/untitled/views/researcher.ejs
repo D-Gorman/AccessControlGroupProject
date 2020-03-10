@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <!--    <meta http-equiv="X-UA-Compatible" content="IE=edge">-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/stylesheets/MainPageNavigationBar.css" />
-    <link rel="stylesheet" type="text/css" href="/stylesheets/pagesOfRole.css" />
-    <title>user main page <%= title %> </title>
+    <link rel="stylesheet" type="text/css" href="stylesheets/MainPageNavigationBar.css" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pagesOfRole.css" />
+    <title>Researcher: <%= title %> </title>
 </head>
 <body>
 <div class="contain">
@@ -14,8 +14,7 @@
         <ul>
             <li class="active"><a href="DataRequestForm">Data Request Form Page</a></li>
             <li><a href="log">Logging</a></li>
-            <li><a href="RoomSituation">Room Occupancy situation</a></li>
-            <li style="float:right"><a href="logout.ejs">logout</a></li>
+            <li style="float:right"><a href="logout">logout</a></li>
         </ul>
     </div>
     <div class="pagesBody">
@@ -25,17 +24,16 @@
                     <label>UserId</label>
                 </div>
                 <div class="otherCols">
-                    <label>Role</label>
-                </div>
-                <div class="otherCols">
-                    <label>FirstName</label>
-                </div>
-                <div class="otherCols">
-                    <label>LastName</label>
+                    <label>Email</label>
                 </div>
             </dev>
             <dev class="right">
-
+                <div class="firstCols">
+                    <h1><%= valueOfId %></h1>
+                </div>
+                <div class="otherCols">
+                    <h1><%= valueOfMail %></h1>
+                </div>
             </dev>
         </form>
     </div>

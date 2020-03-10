@@ -15,20 +15,22 @@ const pool = mysql.createPool({
     host:     '127.0.0.1',
     user:     'root',
     password: 'mysql',
-    database: 'loginInfo'
+    database: 'usbaccess'
 });
+
 
 const crypto = require('crypto');
 //const md5 = crypto.createHash("md5");
 //md5.update("abcdef").digest("hex");
 
-/* 渲染登录页面 */
+
+/* Present the page of login  */
 getRouter.get('/login', function(req, res, next) {
     res.render('login', {flag: 0});
 });
 
 
-/* 处理登录请求 */
+/* Deal with the login request */
 postRouter.post('/login', function (req, res) {
     let name = req.body.userId;
     let pass = crypto.createHash("md5").update(req.body.password).digest("hex");
@@ -49,7 +51,7 @@ postRouter.post('/login', function (req, res) {
         if (error) throw error;
 
         //Search the database according to the userId.
-        var sql = 'SELECT hash_pwd, role FROM test_2 WHERE userId = "' + name + '";';
+        var sql = 'SELECT hash, dashboard FROM login_info WHERE user_id = "' + name + '";';
         console.log(sql);
 
         connection.query(sql, function(err, result) {
@@ -67,19 +69,21 @@ postRouter.post('/login', function (req, res) {
                 var message = JSON.stringify(result);
                 message = JSON.parse(message);
                 console.log(message);
-                console.log(message[0].hash_pwd);
-                console.log(message[0].role);
+                console.log(message[0].hash);
+                console.log(message[0].dashboard);
 
-                if (message[0].hash_pwd == pass) {
+                if (message[0].hash == pass) {
                     console.log('-------------------- * Login Succeed * --------------------');
                     //res.cookie = "authorized=" + req.body.userId + "; path = /";
                     res.cookie("authorized", name, {path: '/'});
-                    res.cookie("role", message[0].role, {path: '/'});
+                    res.cookie("dashboard", message[0].dashboard, {path: '/'});
 
                     //res.redirect("/occupant");
-                    if (message[0].role == 'occupant' || message[0].role == 'researcher') {
-                        res.redirect("/" + message[0].role);
+                    if (message[0].dashboard == 'occupant' || message[0].dashboard == 'researcher') {
+                        console.log('Redirect to /', message[0].dashboard);
+                        res.redirect("/" + message[0].dashboard);
                     } else {
+                        console.log(("Direct to /Jump"));
                         res.redirect("/jump");
                     }
                 } else {
