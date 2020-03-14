@@ -28,7 +28,7 @@ getRouter.get('/DataRequestForm', function (req, res) {
             last_name = json.last_name;
             association = json.association;
             email = json.email;
-            res.render('DataRequestForm', {title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
+            res.render('DataRequestForm', {flag: 0, title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
         })
     }
 });
@@ -55,25 +55,33 @@ postRouter.post('/DataRequestForm', function (req, res) {
     console.log("Data Location: Room ", sqlParams[5]);
     console.log("From " + sqlParams[6] + " to " + sqlParams[7]);
     console.log("Purpose for requests:" + sqlParams[8]);
-    // console.log(sqlParams);
 
-    let selections = req.body.datarequired;
-    console.log("\nType of Data Requests: ");
-    for (let count = 0; count < selections.length; count++) {
-        console.log(count + " : " + selections[count]);
+    //Seconds after 1970-01-01
+    let date1_s=sqlParams[6].replace(/\-/g,'/');
+    let date2_s=sqlParams[7].replace(/\-/g,'/');
+    if (Date.parse(date1_s) > Date.parse(date2_s)) {
+        console.log(Date.parse(date1_s) + " " + Date.parse(date2_s));
+        return res.render('DataRequestForm', {flag: 2, title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
     }
+
+    console.log("\nType of Data Requests: ");
+    if (req.body.datarequired == null) {
+        console.log("-------------------- Warning: Please select the type of data --------------------");
+        return res.render('DataRequestForm', {flag: 1, title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
+    }
+    console.log(req.body.datarequired);
 
     pool.getConnection((error, connection) => {
 
         console.log("-------------------- Data Request: Get a db connection from the pool --------------------");
         if (error) throw error;
 
-        for (let count = 0; count < selections.length; count++) {
-            console.log("Insert " + count + " : " + selections[count]);
+        for (let count = 0; count < req.body.datarequired.length; count++) {
+            console.log("Insert " + count + " : " + req.body.datarequired[count]);
 
-            sqlParams[9] = selections[count];
+            sqlParams[9] = req.body.datarequired[count];
 
-            //Insert data
+            console.log("-------------------- Data Request: Insert log of request -------------------- ");
             // var sql = 'SELECT hash, dashboard FROM login_info WHERE user_id = "' + name + '";';
             var sql = 'INSERT INTO data_request_log (id, role, email, association, name, location, date_begin, date_end, reason, data_req) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
             console.log(sql + ' ' + sqlParams);
@@ -90,9 +98,41 @@ postRouter.post('/DataRequestForm', function (req, res) {
                 console.log('-------------------- *************** --------------------\n\n');
             });
         }
-        connection.release();
-        console.log("-------------------- Data Request: Release the db connection --------------------");
-        res.redirect('/researcher');
+
+        //search the policy according to the location
+        var sql = 'SELECT id FROM policies WHERE location = "' + sqlParams[5] + '";';
+        console.log(sql);
+
+        connection.query(sql, function(err, result) {
+
+            if (err) {
+                console.log('-------------------- **** Error **** --------------------');
+                console.log(err);
+                res.render('login', {flag: 1});
+            } else if (result.length == 0) {
+                console.log('Error. No such policy for the room');
+                connection.release();
+                console.log("-------------------- Data Request: Release the db connection --------------------");
+                return res.render('download', {valueOfID: user_id, valueOfResult: 'No such policy for the room. Your requests are denied'});
+            } else {
+                console.log('-------------------- result --------------------');
+                var message = JSON.stringify(result);
+                message = JSON.parse(message);
+                console.log(message);
+
+                let marks = ' Denied';
+                for (let i = 0; i < message.length; i++) {
+                    if (user_id == message[i].id) {
+                        marks = ' Accepted';
+                    }
+                }
+
+                connection.release();
+                console.log("-------------------- Data Request: Release the db connection --------------------");
+                return res.render('download', {valueOfID: user_id, valueOfResult: 'Data from ' + sqlParams[5] + marks});
+            }
+            console.log('-------------------- *************** --------------------\n\n');
+        });
     });
 })
 
@@ -122,7 +162,6 @@ function getResearcherInfo(name, callback) {
                 return;
             } else {
                 console.log('-------------------- Researcher Information --------------------');
-                //转换json
                 var message = JSON.stringify(result);
                 message = JSON.parse(message);
                 console.log(message);

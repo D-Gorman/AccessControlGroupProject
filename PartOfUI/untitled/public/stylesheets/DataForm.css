@@ -93,6 +93,12 @@ input:valid+span:after {
     clear: both;
 }
 
+.show {
+    align-content: center;
+    margin-top: 10px;
+    color: red;
+}
+
 /* 响应式布局 layout - 在屏幕宽度小于 600px 时， 设置为上下堆叠元素 */
 @media screen and (max-width: 600px) {
     .col-25, .col-75, input[type=submit] {

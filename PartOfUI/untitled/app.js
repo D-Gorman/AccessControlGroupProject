@@ -15,6 +15,7 @@ const DataRequestForm = require('./routes/DataRequestForm');
 const Log = require('./routes/log');
 const UpData = require('./routes/UpData');
 const logout = require('./routes/logout');
+const download = require('./routes/download');
 
 
 const app = express();
@@ -39,6 +40,7 @@ app.use(DataRequestForm.post);
 app.use(Log.get);
 app.use(UpData.get);
 app.use(logout.get);
+app.use(download.get);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
