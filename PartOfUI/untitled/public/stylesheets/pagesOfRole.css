@@ -54,7 +54,6 @@ body {
     /*background-color: #00B7FF;*/
 }
 
-/* 清除浮动 */
 .row:after {
     content: "";
     display: table;

@@ -17,7 +17,7 @@ getRouter.get('/researcher', function (req, res) {
     if(req.cookies.authorized) {
         var name = req.cookies.authorized;
         var message = getUserInfo(name, function(json) {
-            res.render('researcher', {title: name, valueOfId: name, valueOfMail: json});
+            res.render('researcher', {title: name, valueOfId: name, valueOfMail: json, request_status: 0});
         })
     } else {
         res.redirect('/login');

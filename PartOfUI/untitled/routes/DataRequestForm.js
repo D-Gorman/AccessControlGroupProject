@@ -18,6 +18,7 @@ let first_name;
 let last_name;
 let email;
 
+
 getRouter.get('/DataRequestForm', function (req, res) {
     console.log('-------------------- GET: Page of DataRequest --------------------');
     if(req.cookies.authorized) {
@@ -37,7 +38,7 @@ getRouter.get('/DataRequestForm', function (req, res) {
 postRouter.post('/DataRequestForm', function (req, res) {
     console.log('-------------------- POST: Submit request in the Data Request Form Page --------------------');
 
-    let sqlParams = new Array(10);
+    let sqlParams = new Array(11);
     sqlParams[0] = user_id;
     sqlParams[1] = role;
     sqlParams[2] = email;
@@ -65,75 +66,120 @@ postRouter.post('/DataRequestForm', function (req, res) {
     }
 
     console.log("\nType of Data Requests: ");
-    if (req.body.datarequired == null) {
+    if (req.body.datarequired == '.') {
         console.log("-------------------- Warning: Please select the type of data --------------------");
         return res.render('DataRequestForm', {flag: 1, title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
     }
-    console.log(req.body.datarequired);
 
-    pool.getConnection((error, connection) => {
+    let sensor_types = req.body.datarequired;
+    let sensor_cookie = '';
+    console.log(sensor_types);
 
-        console.log("-------------------- Data Request: Get a db connection from the pool --------------------");
-        if (error) throw error;
+    // Result for access control
+    let marks = "Denied";
 
-        for (let count = 0; count < req.body.datarequired.length; count++) {
-            console.log("Insert " + count + " : " + req.body.datarequired[count]);
+    let message = authorisation(function(authorisation_state) {
+        submitLog(authorisation_state);
+    })
 
-            sqlParams[9] = req.body.datarequired[count];
 
-            console.log("-------------------- Data Request: Insert log of request -------------------- ");
-            // var sql = 'SELECT hash, dashboard FROM login_info WHERE user_id = "' + name + '";';
-            var sql = 'INSERT INTO data_request_log (id, role, email, association, name, location, date_begin, date_end, reason, data_req) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-            console.log(sql + ' ' + sqlParams);
+    function authorisation(callback) {
 
-            connection.query(sql, sqlParams, function(err, result) {
+        pool.getConnection((error, connection) => {
+
+            console.log("-------------------- Data Request: Get a db connection from the pool --------------------");
+            if (error) throw error;
+
+            //search the policy according to the location
+            var sql = 'SELECT id FROM policies WHERE location = "' + sqlParams[5] + '";';
+            console.log(sql);
+
+            connection.query(sql, function(err, result) {
 
                 if (err) {
-                    console.log('-------------------- Insert Error --------------------');
-                    console.log(err.message);
-                    return;
+                    console.log('-------------------- Error --------------------');
+                    console.log(err);
+                    res.render('login', {flag: 1});
+                } else if (result.length == 0) {
+                    console.log('Error. No such policy for the room.');
+                    return res.render('researcher', {title: user_id, valueOfId: user_id, valueOfMail: email, request_status: 2});
                 } else {
-                    console.log('-------------------- Insert ' + count + ' Successfully --------------------');
+                    console.log('-------------------- result --------------------');
+                    let message = JSON.stringify(result);
+                    message = JSON.parse(message);
+                    console.log(message);
+
+                    for (let i = 0; i < message.length; i++) {
+                        if (user_id == message[i].id) {
+                            marks = "Accepted";
+                        }
+                    }
+                    //sqlParams[10] = marks;
+                    console.log(marks);
+                    callback(marks);
                 }
                 console.log('-------------------- *************** --------------------\n\n');
             });
-        }
-
-        //search the policy according to the location
-        var sql = 'SELECT id FROM policies WHERE location = "' + sqlParams[5] + '";';
-        console.log(sql);
-
-        connection.query(sql, function(err, result) {
-
-            if (err) {
-                console.log('-------------------- **** Error **** --------------------');
-                console.log(err);
-                res.render('login', {flag: 1});
-            } else if (result.length == 0) {
-                console.log('Error. No such policy for the room');
-                connection.release();
-                console.log("-------------------- Data Request: Release the db connection --------------------");
-                return res.render('download', {valueOfID: user_id, valueOfResult: 'No such policy for the room. Your requests are denied'});
-            } else {
-                console.log('-------------------- result --------------------');
-                var message = JSON.stringify(result);
-                message = JSON.parse(message);
-                console.log(message);
-
-                let marks = ' Denied';
-                for (let i = 0; i < message.length; i++) {
-                    if (user_id == message[i].id) {
-                        marks = ' Accepted';
-                    }
-                }
-
-                connection.release();
-                console.log("-------------------- Data Request: Release the db connection --------------------");
-                return res.render('download', {valueOfID: user_id, valueOfResult: 'Data from ' + sqlParams[5] + marks});
-            }
-            console.log('-------------------- *************** --------------------\n\n');
+            connection.release();
+            console.log("-------------------- Data Request: Release the db connection --------------------");
         });
-    });
+    }
+
+
+    function submitLog(authorisation_state) {
+
+        pool.getConnection((error, connection) => {
+
+            console.log("-------------------- Data Request: Get a db connection from the pool --------------------");
+            if (error) throw error;
+
+            sqlParams[10] = authorisation_state;
+
+            for (let count = 0; count < sensor_types.length - 1; count++) {
+                console.log("Insert " + count + " : " + sensor_types[count]);
+
+                sqlParams[9] = sensor_types[count];
+
+                console.log("-------------------- Data Request: Insert log of request -------------------- ");
+                let sql = 'INSERT INTO data_request_log (id, role, email, association, name, location, date_begin, date_end, reason, data_req, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                console.log(sql + ' ' + sqlParams);
+
+                connection.query(sql, sqlParams, function(err, result) {
+
+                    if (err) {
+                        console.log('-------------------- Insert Error --------------------');
+                        console.log(err.message);
+                        return;
+                    } else {
+                        console.log('-------------------- Insert ' + count + ' Successfully --------------------');
+                    }
+                    console.log('-------------------- *************** --------------------\n\n');
+                });
+            }
+
+            //Accepted --> /download; Denied --> /researcher
+            if (authorisation_state == "Accepted") {
+                connection.release();
+                console.log("-------------------- Data Request: Release the db connection --------------------");
+                for (let count = 0; count < sensor_types.length - 1; count++) {
+                    sensor_cookie = sensor_cookie + sensor_types[count] + ',';
+                }
+                console.log("Sensor_cookie: " + sensor_cookie);
+                res.cookie("room_number", sqlParams[5], {path: '/'});
+                res.cookie("start_date", sqlParams[6], {path: '/'});
+                res.cookie("end_date", sqlParams[7], {path: '/'});
+                res.cookie("sensor_type", sensor_cookie, {path: '/'});
+
+                console.log("-------------------- Requests Accepted -------------------- ");
+                return res.render('download', {valueOfID: user_id, valueOfResult: 'Data from ' + sqlParams[5] + " Accepted"});
+            } else {
+                connection.release();
+                console.log("-------------------- Data Request: Release the db connection --------------------");
+                console.log("-------------------- Requests Denied -------------------- ");
+                return res.render('researcher', {title: user_id, valueOfId: user_id, valueOfMail: email, request_status: 1});
+            }
+        });
+    }
 })
 
 

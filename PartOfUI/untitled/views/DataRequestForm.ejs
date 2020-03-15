@@ -73,18 +73,24 @@
                 </div>
                 <div class="col-70" style="padding-top: 12px">
                     Please select the data that you need:<br/>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Actual Cooling Set point"/>Actual Cooling Set point</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Actual Heating Set point"/>Actual Heating Set point</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="CO2"/>CO2</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Cooling Valve Position"/>Cooling Valve Position</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Heating Valve Position"/>Heating Valve Position</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Light Power Level"/>Light Power Level</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Mode"/>Mode</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Mode Input"/>Mode Input</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Occupancy Sensor"/>Occupancy Sensor</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Relative Humidity"/>Relative Humidity</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Room Brightness"/>Room Brightness</label>
-                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Room Temperature"/>Room Temperature</label>
+<!--                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Actual Cooling Set point"/>Actual Cooling Set point</label>-->
+<!--                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Actual Heating Set point"/>Actual Heating Set point</label>-->
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="co2"/>CO2</label>
+<!--                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Cooling Valve Position"/>Cooling Valve Position</label>-->
+<!--                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Heating Valve Position"/>Heating Valve Position</label>-->
+<!--                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Light Power Level"/>Light Power Level</label>-->
+<!--                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Mode"/>Mode</label>-->
+<!--                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Mode Input"/>Mode Input</label>-->
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="occupancy-sensor"/>Occupancy Sensor</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="relative-humidity"/>Relative Humidity</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="room-brightness"/>Room Brightness</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="room-temperature"/>Room Temperature</label>
+                    <div class="divUnder">
+                        <input type="checkbox" name="datarequired" id="datarequired" value="." checked="checked" style="display: none"/>
+                        <div class="divUpper">
+                            <input type="checkbox" disabled="true" style="display: none"/>
+                        </div>
+                    </div>
                 </div>
                 <div id="warning"></div>
             </div>

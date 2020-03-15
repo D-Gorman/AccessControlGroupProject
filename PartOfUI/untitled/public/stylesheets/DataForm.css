@@ -86,12 +86,14 @@ input:valid+span:after {
     margin-top: 6px;
 }
 
-/* 清除浮动 */
 .row:after {
     content: "";
     display: table;
     clear: both;
 }
+
+.divUnder{height:20px; width:100%; position:relative; z-index:1;}
+.divUpper{height:20px; width:100%; position:absolute; top:0px; left:0; z-index:2;}
 
 .show {
     align-content: center;
@@ -99,7 +101,7 @@ input:valid+span:after {
     color: red;
 }
 
-/* 响应式布局 layout - 在屏幕宽度小于 600px 时， 设置为上下堆叠元素 */
+/* Responsive layout-set to stack elements when the screen width is less than 600px */
 @media screen and (max-width: 600px) {
     .col-25, .col-75, input[type=submit] {
         width: 100%;

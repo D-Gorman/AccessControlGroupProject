@@ -6,7 +6,11 @@ getRouter.get('/logout', function (req, res) {
     console.log('-------------------- Clear Cookies, Jump to Page of Login --------------------');
     // req.cookies.clearCookie('authorized');
     res.clearCookie('authorized');
-    // console.log(req.cookies);
+    res.clearCookie('dashboard');
+    res.clearCookie('room_number');
+    res.clearCookie('start_date');
+    res.clearCookie('end_date');
+    res.clearCookie('sensor_type');
     res.redirect('/login');
 
 });

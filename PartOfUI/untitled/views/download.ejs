@@ -39,7 +39,7 @@
             </div>
             <div class="right">
                 <div class="row">
-                    <input type="button" style="margin-top: 30%" value="Download" class="selectionBtn" id="downloadBtn" onclick="">
+                    <input type="button" style="margin-top: 30%" value="Download" class="selectionBtn" id="downloadBtn" onclick="download()">
                     <input type="button" style="margin-top: 30%" value="Back" class="selectionBtn" id="backBtn" onclick="window.location.href='researcher'">
                 </div>
             </div>
@@ -47,5 +47,54 @@
     </div>
     <div class="pagesBottom"></div>
 </div>
+<script>
+    function download() {
+
+        let start_date = getCookie("start_date");
+        let end_date = getCookie("end_date");
+        let room_number = getCookie("room_number");
+        let sensor_type = getCookie("sensor_type");
+
+        // window.alert(start_date + "\n" + end_date + "\n" + room_number + "\n" + sensor_type);
+
+        let arrSensor = sensor_type.split("%2C");
+
+        for (let i = 0; i < arrSensor.length - 1; i++) {
+
+            url_string = "https://api.usb.urbanobservatory.ac.uk/api/v2.0a/sensors/timeseries/room-" + room_number + "/" + arrSensor[i] + "/raw/historic?startTime=" + start_date + "T00:00:00&endTime=" + end_date + "T23:59:59&outputAs=csv";
+
+            var api_request = new XMLHttpRequest();
+            api_request.open("GET", url_string, true);
+            api_request.onload = function () {
+                if (api_request.status == 200) {
+                    var output_data = "data:text/csv;charset=utf-8," + encodeURIComponent(this.response);
+
+                    var d_link = document.createElement("a");
+                    d_link.href = output_data;
+                    d_link.download = arrSensor[i] + ":" + room_number + ".csv";
+                    d_link.click();
+                } else if (api_request.status == 400) {
+                    window.alert("Error. Incorrect request parameters.");
+                } else {
+                    window.alert("Error");
+                }
+            }
+            api_request.send();
+        }
+    }
+
+
+    function getCookie(cookieKey) {
+        let strCookie = document.cookie;
+        let arrCookie = strCookie.split("; ");
+        for(let i = 0; i < arrCookie.length; i++){
+            let keyValue = arrCookie[i].split("=");
+            if(cookieKey == keyValue[0]){
+                return keyValue[1];
+            }
+        }
+        return "";
+    }
+</script>
 </body>
 </html>

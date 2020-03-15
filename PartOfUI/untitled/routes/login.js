@@ -25,7 +25,13 @@ const crypto = require('crypto');
 
 
 /* Present the page of login  */
-getRouter.get('/login', function(req, res, next) {
+getRouter.get('/login', function(req, res) {
+    res.clearCookie('authorized');
+    res.clearCookie('dashboard');
+    res.clearCookie('room_number');
+    res.clearCookie('start_date');
+    res.clearCookie('end_date');
+    res.clearCookie('sensor_type');
     res.render('login', {flag: 0});
 });
 
