@@ -4,38 +4,22 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="stylesheets/DataForm.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/MainPageNavigationBar.css" />
-    <title>Title</title>
+    <title>Occupant - Policies</title>
 </head>
 <body>
 <div class="contain">
     <div class="container-fluid">
         <ul>
-            <li class="active"><li><a href="occupant">Occupant</a></li>
-            <li><a href="UpData">UpData Form</a></li>
-            <li style="float:right"><a href="logout">Logout</a></li>
+            <li class="active"><li><a href="occupant">occupant</a></li>
+            <li><a href="UpData">Policies</a></li>
+            <li style="float:right"><a href="logout">logout</a></li>
         </ul>
     </div>
     <div class="pagesBody">
-        <form id="formId" action="" method="GET">
+        <form id="formId" action="" method="post">
             <div class="row">
                 <div class="col-30">
-                    <label for="userId">UserId</label>
-                </div>
-                <div class="col-70">
-                    <input type="text" id="userId" name="userId" placeholder="" value="<%= valueOfID %>" readonly="readonly">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-30">
-                    <label for="role">Role</label>
-                </div>
-                <div class="col-70">
-                    <input type="text" id="role" name="role" placeholder="">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-30">
-                    <label for="association">Association</label>
+                    <label for="association">Permitted associations:</label>
                 </div>
                 <div class="col-70">
                     <select id="association" name="association">
@@ -47,10 +31,29 @@
             </div>
             <div class="row">
                 <div class="col-30">
-                    <label for="dlocation">Data location</label>
+                    <label>Data available:</label>
                 </div>
                 <div class="col-70">
-                    <select id="dlocation" name="datalocation">
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Actual Cooling Set point"/>Actual Cooling Set point</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Actual Heating Set point"/>Actual Heating Set point</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="CO2"/>CO2</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Cooling Valve Position"/>Cooling Valve Position</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Heating Valve Position"/>Heating Valve Position</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Light Power Level"/>Light Power Level</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Mode"/>Mode</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Mode Input"/>Mode Input</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Occupancy Sensor"/>Occupancy Sensor</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Relative Humidity"/>Relative Humidity</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Room Brightness"/>Room Brightness</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="Room Temperature"/>Room Temperature</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="dataLocation">Data location:</label>
+                </div>
+                <div class="col-70">
+                    <select id="dataLocation" name="dataLocation">
                         <option value="6.008">6.008</option>
                         <option value="6.009">6.009</option>
                         <option value="6.024">6.024</option>
@@ -58,8 +61,20 @@
                     </select>
                 </div>
             </div>
+            
+            <div class="row">
+                <div class="col-30">
+                    <label for="datechoose">Data availability:</label>
+                </div>
+                <div class="col-70" style="margin-top: 15px;">
+                    <input id="date_start" name="date_start" type="date" placeholder="MM-DD-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" min="2020-01-01" max="2100-01-01" required/><span class="validity"></span>
+                    -
+                    <input id="date_end" name="date_end" type="date" placeholder="MM-DD-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" min="2020-01-01" max="2100-01-01" required/><span class="validity"></span>
+                </div>
+            </div>
+            
             <div class="row" style="text-align: center">
-                <input type="submit" value="UpData">
+                <input type="submit" value="Update">
             </div>
         </form>
 
