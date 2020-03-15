@@ -41,6 +41,7 @@ app.use(Log.get);
 app.use(UpData.get);
 app.use(logout.get);
 app.use(download.get);
+app.use(UpData.post);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
