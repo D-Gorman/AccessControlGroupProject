@@ -17,7 +17,19 @@ Shared code repository for the group 2 security and resilience project on access
    2. Complete the function of submitting the data requests. Plus, all the records will be inserted into db table data_request_log.
   
 ## Version 3.0
-1. 
-+ Add the function of download CSV file. 
+1. Add the function of download CSV file.    From Danial
 + Store all relative paramaters into the cookie.
 + Add button event to set off the downloading.
+
+## Version 3.1
+1. Add the function of log(all previous data requests).  From Kou
++ "/log" for researcher; 
++ "/RoomAccessDataLog" for occupant;
+
+2. Add the function of setting up data policies.    From Natalie
++ Fix some problems:
+
+   1. Fix the UI
+   2. Set the "location" unable to be changed. 
+   3. Add a selection about "role".
+  
