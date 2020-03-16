@@ -25,6 +25,9 @@
                 <div class="otherCols">
                     <label>Location</label>
                 </div>
+                <div class="otherCols">
+                    <label>Policies</label>
+                </div>
             </dev>
             <dev class="right">
                 <div class="firstCols">
@@ -33,6 +36,16 @@
                 <div class="otherCols">
                     <h1><%= valueOfLoc %></h1>
                 </div>
+                <table style="width: 700px;border: 1px solid black;" id="policy">
+                    <tr>
+                        <td>Data Request</td>
+                        <td>Association</td>
+                        <td>Role</td>
+                        <td>Date Begin</td>
+                        <td>Date End</td>
+                    </tr>
+                    <%- all %>
+                </table>
             </dev>
         </form>
     </div>

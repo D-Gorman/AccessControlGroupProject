@@ -57,19 +57,27 @@ postRouter.post('/UpData', function (req, res) {
             console.log(count + " : " + selections[count]);
         }
 
-        pool.getConnection((error, connection) => {
-            console.log("-------------------- Update Data: Get a db connection from the pool --------------------");
-            if (error) throw error;
+        for (let count = 0; count < selections.length - 1; count++) {
+            console.log("-------------------- --------------------");
+            console.log(count + " : Set policies for " + selections[count]);
 
-            for (let count = 0; count < selections.length - 1; count++) {
-                console.log(count + " : Set policies for " + selections[count]);
+            let message = matchPolicy(selections[count], function(match_result) {
+                insertOrUpdate(selections[count], count, match_result);
+            })
+        }
+        return res.redirect('/occupant');
 
-                sqlParams[6] = selections[count]; //these are the data requests
+        function matchPolicy(selections, callback) {
 
+            pool.getConnection((error, connection) => {
+                console.log("-------------------- Update Data: Get a db connection from the pool to look for a matching policy in the table--------------------");
+                if (error) throw error;
+
+                //sqlParams[6] = selections; //these are the data requests
                 console.log(sqlParams);
 
                 //look for a matching policy in the table
-                var findPolicySql = 'SELECT * FROM policies WHERE id = "' + req.cookies.authorized + '" AND data_req = "' + sqlParams[6] + '";';
+                let findPolicySql = 'SELECT * FROM policies WHERE id = "' + req.cookies.authorized + '" AND data_req = "' + selections + '";';
                 console.log(findPolicySql);
                 connection.query(findPolicySql, function(err, result) {
 
@@ -78,56 +86,82 @@ postRouter.post('/UpData', function (req, res) {
                         console.log(err);
                         throw err;
                     } else if (result.length == 0) {
-                        console.log('-------------------- No matching entry --------------------'); //must insert policy
-                        let insertSql = 'INSERT INTO policies (id, location, association, role, date_begin, date_end, data_req) VALUES (?, ?, ?, ?, ?, ?, ?)';
-                        console.log(insertSql + ' ' + sqlParams);
-
-                        connection.query(insertSql, sqlParams, function(err, result) {
-        
-                            if (err) {
-                                console.log('-------------------- Insert Error --------------------');
-                                console.log(err.message);
-                                return;
-                            } else {
-                                console.log('-------------------- Inserted Successfully --------------------');
-                            }
-                            console.log('-------------------- *************** --------------------\n\n');
-                        });
-                        return;
+                        console.log('-------------------- No matching entry, Insert Policy --------------------'); //must insert policy
+                        callback("INSERT");
                     } else {
-                        console.log('-------------------- Entry found --------------------'); //must update entry
-                        //var updateSql = 'UPDATE policies SET (type, location, date_begin, date_end) VALUES (?, ?, ?, ?)';
-                        var updateSql = "UPDATE policies SET location = ?, association = ?, role = ?, date_begin = ?, date_end = ? WHERE id = ? AND data_req = ?";
-
-                        //set params for updating - slightly different
-                        let sqlUpdate = new Array(7);
-                        sqlUpdate[0] = sqlParams[1];
-                        sqlUpdate[1] = sqlParams[2];
-                        sqlUpdate[2] = sqlParams[3];
-                        sqlUpdate[3] = sqlParams[4];
-                        sqlUpdate[4] = sqlParams[5];
-                        sqlUpdate[5] = sqlParams[0];
-                        sqlUpdate[6] = sqlParams[6];
-
-                        connection.query(updateSql, sqlUpdate, function(err, result) {
-        
-                            if (err) {
-                                console.log('-------------------- Update Error --------------------');
-                                console.log(err.message);
-                                return;
-                            } else {
-                                console.log('-------------------- Updated Successfully --------------------');
-                            }
-                            console.log('-------------------- *************** --------------------\n\n');
-                        });
-                        return;
+                        console.log('-------------------- Entry found, Update Policy --------------------'); //must update entry
+                        callback("UPDATE");
                     }
+                    console.log('-------------------- *************** --------------------\n\n');
+                });
+                connection.release();
+                console.log("-------------------- Update Data: In matchPolicy(), Release the db connection --------------------");
+            });
+        }
+
+        function insertOrUpdate(selections, count, result) {
+
+            if (result == "INSERT") {
+
+                pool.getConnection((error, connection) => {
+                    console.log("-------------------- " + count + " Update Data: Get a db connection from the pool to insert matching policy--------------------");
+                    if (error) throw error;
+
+                    let insertSql = 'INSERT INTO policies (id, location, association, role, date_begin, date_end, data_req) VALUES (?, ?, ?, ?, ?, ?, ?)';
+                    sqlParams[6] = selections;
+                    console.log(insertSql + ' ' + sqlParams);
+
+                    connection.query(insertSql, sqlParams, function(err, result) {
+
+                        if (err) {
+                            console.log("-------------------- Insert Error --------------------");
+                            console.log(err.message);
+                            return;
+                        } else {
+                            console.log("-------------------- " + count + " Inserted Successfully --------------------");
+                        }
+                        console.log('-------------------- *************** --------------------\n\n');
+                    });
+                    connection.release();
+                    console.log("-------------------- Update Data: In insertOrUpdate() " + count + " , Release the db connection --------------------");
+                });
+            } else if (result == "UPDATE") {
+
+                pool.getConnection((error, connection) => {
+                    console.log("-------------------- " + count + " Update Data: Get a db connection from the pool to update policy--------------------");
+                    if (error) throw error;
+
+                    //var updateSql = 'UPDATE policies SET (type, location, date_begin, date_end) VALUES (?, ?, ?, ?)';
+                    let updateSql = "UPDATE policies SET location = ?, association = ?, role = ?, date_begin = ?, date_end = ? WHERE id = ? AND data_req = ?";
+
+                    //set params for updating - slightly different
+                    let sqlUpdate = new Array(7);
+                    sqlUpdate[0] = sqlParams[1];
+                    sqlUpdate[1] = sqlParams[2];
+                    sqlUpdate[2] = sqlParams[3];
+                    sqlUpdate[3] = sqlParams[4];
+                    sqlUpdate[4] = sqlParams[5];
+                    sqlUpdate[5] = sqlParams[0];
+                    sqlUpdate[6] = selections;
+
+                    console.log(updateSql + ' ' + sqlUpdate);
+
+                    connection.query(updateSql, sqlUpdate, function(err, result) {
+
+                        if (err) {
+                            console.log("-------------------- Update Error --------------------");
+                            console.log(err.message);
+                            return;
+                        } else {
+                            console.log("-------------------- " + count + " Updated Successfully --------------------");
+                        }
+                        console.log('-------------------- *************** --------------------\n\n');
+                    });
+                    connection.release();
+                    console.log("-------------------- Update Data: In insertOrUpdate() " + count + " , Release the db connection --------------------");
                 });
             }
-            connection.release();
-            console.log("-------------------- Update Data: Release the db connection --------------------");
-            res.redirect('/occupant');
-        });
+        }
     } else {
         res.send(403); 
     }
@@ -168,3 +202,68 @@ function getOccupantInfo(name, callback) {
 }
 exports.get = getRouter;
 exports.post = postRouter;
+
+//
+// // for (let count = 0; count < selections.length - 1; count++) {
+// //     console.log(count + " : Set policies for " + selections[count]);
+//
+// sqlParams[6] = selections[count]; //these are the data requests
+//
+// console.log(sqlParams);
+//
+// //look for a matching policy in the table
+// var findPolicySql = 'SELECT * FROM policies WHERE id = "' + req.cookies.authorized + '" AND data_req = "' + sqlParams[6] + '";';
+// console.log(findPolicySql);
+// connection.query(findPolicySql, function(err, result) {
+//
+//     if (err) {
+//         console.log('-------------------- Search error --------------------');
+//         console.log(err);
+//         throw err;
+//     } else if (result.length == 0) {
+//         console.log('-------------------- No matching entry --------------------'); //must insert policy
+//         let insertSql = 'INSERT INTO policies (id, location, association, role, date_begin, date_end, data_req) VALUES (?, ?, ?, ?, ?, ?, ?)';
+//         console.log(insertSql + ' ' + sqlParams);
+//
+//         connection.query(insertSql, sqlParams, function(err, result) {
+//
+//             if (err) {
+//                 console.log('-------------------- Insert Error --------------------');
+//                 console.log(err.message);
+//                 return;
+//             } else {
+//                 console.log('-------------------- Inserted Successfully --------------------');
+//             }
+//             console.log('-------------------- *************** --------------------\n\n');
+//         });
+//         return;
+//     } else {
+//         console.log('-------------------- Entry found --------------------'); //must update entry
+//         //var updateSql = 'UPDATE policies SET (type, location, date_begin, date_end) VALUES (?, ?, ?, ?)';
+//         var updateSql = "UPDATE policies SET location = ?, association = ?, role = ?, date_begin = ?, date_end = ? WHERE id = ? AND data_req = ?";
+//
+//         //set params for updating - slightly different
+//         let sqlUpdate = new Array(7);
+//         sqlUpdate[0] = sqlParams[1];
+//         sqlUpdate[1] = sqlParams[2];
+//         sqlUpdate[2] = sqlParams[3];
+//         sqlUpdate[3] = sqlParams[4];
+//         sqlUpdate[4] = sqlParams[5];
+//         sqlUpdate[5] = sqlParams[0];
+//         sqlUpdate[6] = sqlParams[6];
+//
+//         connection.query(updateSql, sqlUpdate, function(err, result) {
+//
+//             if (err) {
+//                 console.log('-------------------- Update Error --------------------');
+//                 console.log(err.message);
+//                 return;
+//             } else {
+//                 console.log('-------------------- Updated Successfully --------------------');
+//             }
+//             console.log('-------------------- *************** --------------------\n\n');
+//         });
+//         return;
+//     }
+// });
+// // }
