@@ -11,18 +11,16 @@ const pool = mysql.createPool({
     database: 'usbaccess'
 });
 
-getRouter.get('/UpData', function (req, res) {
-    console.log('-------------------- GET: Page of DataRequest --------------------');
-    if(req.cookies.authorized) {
-        user_id = req.cookies.authorized;
-        var message = getOccupantInfo(user_id, function(json) {
-            role = json.role;
+let dataLocation;
 
-            first_name = json.first_name;
-            last_name = json.last_name;
-            association = json.association;
-            email = json.email;
-            res.render('Updata', {title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
+getRouter.get('/UpData', function (req, res) {
+    console.log('-------------------- GET: Page of UpData --------------------');
+    if(req.cookies.authorized) {
+        let user_id = req.cookies.authorized;
+        var message = getOccupantInfo(user_id, function(json) {
+            let role = json.role;
+            dataLocation = json.location;
+            res.render('Updata', {valueOfLoc: dataLocation, flag: 0});
         })
     }
 });
@@ -32,31 +30,46 @@ postRouter.post('/UpData', function (req, res) {
     if(req.cookies.authorized) {
         console.log(':)))))')
 
-        let sqlParams = new Array(5);
+        let sqlParams = new Array(7);
         //sets values for insertion
         sqlParams[0] = req.cookies.authorized;
-        sqlParams[1] = req.body.association;
-        sqlParams[2] = req.body.dataLocation;
-        sqlParams[3] = req.body.date_start;
-        sqlParams[4] = req.body.date_end;
+        sqlParams[1] = dataLocation;
+        sqlParams[2] = req.body.association;
+        sqlParams[3] = req.body.role;
+        sqlParams[4] = req.body.date_start;
+        sqlParams[5] = req.body.date_end;
 
+        //Seconds after 1970-01-01
+        let date1_s=sqlParams[4].replace(/\-/g,'/');
+        let date2_s=sqlParams[5].replace(/\-/g,'/');
+        if (Date.parse(date1_s) > Date.parse(date2_s)) {
+            console.log(Date.parse(date1_s) + " " + Date.parse(date2_s));
+            return res.render('Updata', {valueOfLoc: dataLocation, flag: 2});
+        }
+
+        console.log("\nType of Data Policies: ");
+        if (req.body.datarequired == '.') {
+            console.log("-------------------- Warning: Please select the type of data --------------------");
+            return res.render('Updata', {valueOfLoc: dataLocation, flag: 1});
+        }
         let selections = req.body.datarequired;
-        console.log("\nType of Data Requests: ");
         for (let count = 0; count < selections.length; count++) {
             console.log(count + " : " + selections[count]);
         }
 
         pool.getConnection((error, connection) => {
-            console.log("-------------------- Data Request: Get a db connection from the pool --------------------");
+            console.log("-------------------- Update Data: Get a db connection from the pool --------------------");
             if (error) throw error;
 
-            for (let count = 0; count < selections.length; count++) {
-                console.log("Insert " + count + " : " + selections[count]);
+            for (let count = 0; count < selections.length - 1; count++) {
+                console.log(count + " : Set policies for " + selections[count]);
 
-                sqlParams[5] = selections[count]; //these are the data requests
-            
+                sqlParams[6] = selections[count]; //these are the data requests
+
+                console.log(sqlParams);
+
                 //look for a matching policy in the table
-                var findPolicySql = 'SELECT * FROM policies WHERE id = "' + req.cookies.authorized + '" AND data_req = "' + sqlParams[5] + '";';
+                var findPolicySql = 'SELECT * FROM policies WHERE id = "' + req.cookies.authorized + '" AND data_req = "' + sqlParams[6] + '";';
                 console.log(findPolicySql);
                 connection.query(findPolicySql, function(err, result) {
 
@@ -66,7 +79,7 @@ postRouter.post('/UpData', function (req, res) {
                         throw err;
                     } else if (result.length == 0) {
                         console.log('-------------------- No matching entry --------------------'); //must insert policy
-                        var insertSql = 'INSERT INTO policies (id, type, location, date_begin, date_end, data_req) VALUES (?, ?, ?, ?, ?, ?)';
+                        let insertSql = 'INSERT INTO policies (id, location, association, role, date_begin, date_end, data_req) VALUES (?, ?, ?, ?, ?, ?, ?)';
                         console.log(insertSql + ' ' + sqlParams);
 
                         connection.query(insertSql, sqlParams, function(err, result) {
@@ -84,16 +97,17 @@ postRouter.post('/UpData', function (req, res) {
                     } else {
                         console.log('-------------------- Entry found --------------------'); //must update entry
                         //var updateSql = 'UPDATE policies SET (type, location, date_begin, date_end) VALUES (?, ?, ?, ?)';
-                        var updateSql = "UPDATE policies SET type = ?, location = ?, date_begin = ?,  date_end = ? WHERE id = ? AND data_req = ?";
+                        var updateSql = "UPDATE policies SET location = ?, association = ?, role = ?, date_begin = ?, date_end = ? WHERE id = ? AND data_req = ?";
 
                         //set params for updating - slightly different
-                        let sqlUpdate = new Array(4);
+                        let sqlUpdate = new Array(7);
                         sqlUpdate[0] = sqlParams[1];
                         sqlUpdate[1] = sqlParams[2];
                         sqlUpdate[2] = sqlParams[3];
                         sqlUpdate[3] = sqlParams[4];
-                        sqlUpdate[4] = sqlParams[0];
-                        sqlUpdate[5] = sqlParams[5]
+                        sqlUpdate[4] = sqlParams[5];
+                        sqlUpdate[5] = sqlParams[0];
+                        sqlUpdate[6] = sqlParams[6];
 
                         connection.query(updateSql, sqlUpdate, function(err, result) {
         
@@ -111,8 +125,8 @@ postRouter.post('/UpData', function (req, res) {
                 });
             }
             connection.release();
-            console.log("-------------------- Data Request: Release the db connection --------------------");
-            res.redirect('/researcher');
+            console.log("-------------------- Update Data: Release the db connection --------------------");
+            res.redirect('/occupant');
         });
     } else {
         res.send(403); 
@@ -124,11 +138,11 @@ function getOccupantInfo(name, callback) {
 
     pool.getConnection((error, connection) => {
 
-        console.log("-------------------- Data Request: Get a db connection from the pool to search Occupant Information --------------------");
+        console.log("-------------------- Update Data: Get a db connection from the pool to search Occupant Information --------------------");
         if (error) throw error;
 
         //Search the database according to the userId.
-        var sql = 'SELECT * FROM occupant WHERE user_id = "' + name + '";';
+        let sql = 'SELECT * FROM occupant WHERE user_id = "' + name + '";';
         console.log(sql);
         connection.query(sql, function(err, result) {
 
@@ -141,8 +155,7 @@ function getOccupantInfo(name, callback) {
                 return;
             } else {
                 console.log('-------------------- Researcher Information --------------------');
-                //转换json
-                var message = JSON.stringify(result);
+                let message = JSON.stringify(result);
                 message = JSON.parse(message);
                 console.log(message);
                 callback(message[0]);
@@ -150,7 +163,7 @@ function getOccupantInfo(name, callback) {
             console.log('-------------------- *************** --------------------\n\n');
         });
         connection.release();
-        console.log("-------------------- Data Request: Release the db connection --------------------");
+        console.log("-------------------- Update Data: Release the db connection --------------------");
     });
 }
 exports.get = getRouter;

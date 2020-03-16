@@ -12,10 +12,11 @@ const occupant = require('./routes/occupant');
 const researcher = require('./routes/researcher');
 const jump = require('./routes/jump');
 const DataRequestForm = require('./routes/DataRequestForm');
-const Log = require('./routes/log');
+const log = require('./routes/log');
 const UpData = require('./routes/UpData');
 const logout = require('./routes/logout');
 const download = require('./routes/download');
+const RoomAccessDataLog = require('./routes/RoomAccessDataLog');
 
 
 const app = express();
@@ -37,11 +38,12 @@ app.use(researcher.get);
 app.use(jump.get);
 app.use(DataRequestForm.get);
 app.use(DataRequestForm.post);
-app.use(Log.get);
+app.use(log.get);
 app.use(UpData.get);
 app.use(logout.get);
 app.use(download.get);
 app.use(UpData.post);
+app.use(RoomAccessDataLog.get);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

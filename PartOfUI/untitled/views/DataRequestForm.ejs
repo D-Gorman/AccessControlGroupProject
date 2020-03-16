@@ -13,7 +13,7 @@
         <ul>
             <li class="active"><li><a href="researcher">Researcher</a></li>
             <li class="active"><a href="DataRequestForm">Data Request Form Page</a></li>
-            <li><a href="log">Logging</a></li>
+<!--            <li><a href="log">Logging</a></li>-->
             <li style="float:right"><a href="logout">Logout</a></li>
         </ul>
     </div>
@@ -141,7 +141,7 @@
     <script>
         let failure = "<%= flag %>";
         if(failure == 1) document.getElementById("show").innerText = "Warning: Please select the data that you need";
-        if(failure == 2) document.getElementById("show").innerText = "Start date should not be later than End date";
+        if(failure == 2) document.getElementById("show").innerText = "Warning: Start date should not be later than End date";
     </script>
 <!--    <script>-->
 <!--        function isDate(dateString){-->
