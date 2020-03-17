@@ -52,8 +52,9 @@ Shared code repository for the group 2 security and resilience project on access
 
    1. Add one more limit about the request time, "the end date could not be later than today".
    2. Users will submit requests for different kinds of data at the same time, so the judgment should be able to provide divided results for the group of requests. Utilizing the loop and callback to avoid asynchronism and solve this problem.
-   + No policies for all data requests.    -->   jump to /researcher
-   + All requests are denied.              -->   jump to /researcher
-   + At last one request is accepted.      -->   jump to /download
+   
+      + No policies for all data requests.    -->   jump to /researcher
+      + All requests are denied.              -->   jump to /researcher
+      + At last one request is accepted.      -->   jump to /download
 
 3. Add the sql file, showing the structure of the database.
