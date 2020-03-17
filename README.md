@@ -6,8 +6,8 @@ Shared code repository for the group 2 security and resilience project on access
 1. Function of Login UI. 
 2. Connection between Page of Login and Page of occupant/researcher/both.
 
-### Structure of PartOfLogin
-![image](https://github.com/D-Gorman/AccessControlGroupProject/blob/PartOfLogin/StructureOfLogin.png)
+### Structure of Project
+![image](https://github.com/D-Gorman/AccessControlGroupProject/blob/PartOfLogin/Structure_of_Project.jpeg)
 
 ## Version 2.0
 1. Fix the structure of Page of DataRequestForm(only for researcher)
@@ -33,3 +33,12 @@ Shared code repository for the group 2 security and resilience project on access
    2. Set the "location" unable to be changed. 
    3. Add a selection about "role".
   
+## Version 3.2
+1. Fix some problem about "log"
++ Remove unnecessary code and streamline programs.
++ When there is no previous records, the website will be unavailable. Add callback("Empty record about the requests") to deal with this bug.
+
+2. Fix some bug about "update policies"
++ Connecting to the database is performed asynchronously in js, so using callback when we need to iterative access to the database.
+
+3. Add a table to display the occupant's current data access policy in the page of occupant.
