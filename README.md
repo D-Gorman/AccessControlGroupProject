@@ -42,3 +42,18 @@ Shared code repository for the group 2 security and resilience project on access
 + Connecting to the database is performed asynchronously in js, so using callback when we need to iterative access to the database.
 
 3. Add a table to display the occupant's current data access policy in the page of occupant.
+
+## Version 3.4
+1. Rename the file "Updata" to "UpdatePolicy".
+2. DataRequestForm: 
++ Add the function of making judgment for data request.    From Steve
++ Change the UI of download, add a table to display the result of requests.
++ Fix some problem of the DataRequestForm.
+
+   1. Add one more limit about the request time, "the end date could not be later than today".
+   2. Users will submit requests for different kinds of data at the same time, so the judgment should be able to provide divided results for the group of requests. Utilizing the loop and callback to avoid asynchronism and solve this problem.
+   + No policies for all data requests.    -->   jump to /researcher
+   + All requests are denied.              -->   jump to /researcher
+   + At last one request is accepted.      -->   jump to /download
+
+3. Add the sql file, showing the structure of the database.
