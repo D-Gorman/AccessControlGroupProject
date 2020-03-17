@@ -6,8 +6,8 @@ Shared code repository for the group 2 security and resilience project on access
 1. Function of Login UI. 
 2. Connection between Page of Login and Page of occupant/researcher/both.
 
-### Structure of PartOfLogin
-![image](https://github.com/D-Gorman/AccessControlGroupProject/blob/PartOfLogin/StructureOfLogin.png)
+### Structure of Project
+![image](https://github.com/D-Gorman/AccessControlGroupProject/blob/PartOfLogin/Structure_of_Project.jpeg)
 
 ## Version 2.0
 1. Fix the structure of Page of DataRequestForm(only for researcher)
