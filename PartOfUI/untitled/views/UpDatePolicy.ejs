@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <ul>
             <li class="active"><li><a href="occupant">Occupant</a></li>
-            <li><a href="UpData">Policies</a></li>
+            <li><a href="UpDatePolicy">Update Policies</a></li>
             <li style="float:right"><a href="logout">Logout</a></li>
         </ul>
     </div>
@@ -23,12 +23,6 @@
                 </div>
                 <div class="col-70" style="padding-top: 12px">
                     <input type="text" id="dataLocation" name="dataLocation" placeholder="" value="<%= valueOfLoc %>" readonly="readonly" disabled="true">
-                    <!--                    <select id="dataLocation" name="dataLocation">-->
-                    <!--                        <option value="6.008">6.008</option>-->
-                    <!--                        <option value="6.009">6.009</option>-->
-                    <!--                        <option value="6.024">6.024</option>-->
-                    <!--                        <option value="6.025">6.025</option>-->
-                    <!--                    </select>-->
                 </div>
             </div>
 
@@ -95,6 +89,7 @@
         let failure = "<%= flag %>";
         if(failure == 1) document.getElementById("warning").innerText = "Warning: Please select the data that you need";
         if(failure == 2) document.getElementById("warning").innerText = "Warning: Start date should not be later than End date";
+        if(failure == 3) document.getElementById("warning").innerText = "Warning: End date should not be later than Today!";
     </script>
 </div>
 </body>

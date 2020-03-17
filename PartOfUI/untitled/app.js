@@ -13,7 +13,7 @@ const researcher = require('./routes/researcher');
 const jump = require('./routes/jump');
 const DataRequestForm = require('./routes/DataRequestForm');
 const log = require('./routes/log');
-const UpData = require('./routes/UpData');
+const UpDatePolicy = require('./routes/UpDatePolicy');
 const logout = require('./routes/logout');
 const download = require('./routes/download');
 const RoomAccessDataLog = require('./routes/RoomAccessDataLog');
@@ -39,10 +39,10 @@ app.use(jump.get);
 app.use(DataRequestForm.get);
 app.use(DataRequestForm.post);
 app.use(log.get);
-app.use(UpData.get);
+app.use(UpDatePolicy.get);
 app.use(logout.get);
 app.use(download.get);
-app.use(UpData.post);
+app.use(UpDatePolicy.post);
 app.use(RoomAccessDataLog.get);
 
 // catch 404 and forward to error handler

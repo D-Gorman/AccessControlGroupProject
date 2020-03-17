@@ -57,12 +57,18 @@ postRouter.post('/DataRequestForm', function (req, res) {
     console.log("From " + sqlParams[6] + " to " + sqlParams[7]);
     console.log("Purpose for requests:" + sqlParams[8]);
 
-    //Seconds after 1970-01-01
-    let date1_s=sqlParams[6].replace(/\-/g,'/');
-    let date2_s=sqlParams[7].replace(/\-/g,'/');
-    if (Date.parse(date1_s) > Date.parse(date2_s)) {
-        console.log(Date.parse(date1_s) + " " + Date.parse(date2_s));
+    // Seconds after 1970-01-01
+    let request_date_begin = sqlParams[6].replace(/\-/g,'/');
+    let request_date_end = sqlParams[7].replace(/\-/g,'/');
+    if (Date.parse(request_date_begin) > Date.parse(request_date_end)) {
+        console.log(Date.parse(request_date_begin) + " " + Date.parse(request_date_end));
         return res.render('DataRequestForm', {flag: 2, title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
+    }
+    // Get the timestamp of right now.
+    let timestamp = Date.parse(new Date());
+    if (Date.parse(request_date_end) > timestamp) {
+        console.log("End date in request: " + Date.parse(request_date_end) + " <--> " + "Today : " + timestamp);
+        return res.render('DataRequestForm', {flag: 3, title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
     }
 
     console.log("\nType of Data Requests: ");
@@ -72,18 +78,69 @@ postRouter.post('/DataRequestForm', function (req, res) {
     }
 
     let sensor_types = req.body.datarequired;
-    let sensor_cookie = '';
     console.log(sensor_types);
 
-    // Result for access control
-    let marks = "Denied";
+    // Store accepted result in cookie.
+    let sensor_cookie_accepted = '';
+    // Store denied result in cookie.
+    let sensor_cookie_denied = '';
 
-    let message = authorisation(function(authorisation_state) {
-        submitLog(authorisation_state);
-    })
+    // Count of empty policy about the data request.
+    let number_of_empty_policy = 0;
+    // Count of accepted data request.
+    let number_of_accepted_request = 0;
+
+    for (let count = 0; count < sensor_types.length - 1; count++) {
+        console.log(count + " : Search access control policies for  " + sensor_types[count]);
+
+        let message = authorisation(sensor_types[count], count, function(empty_policy_num, accepted_request_num, authorisation_state) {
+            submitLogAndSetCookies(sensor_types[count], count, authorisation_state, function (accepted_cookie, denied_cookie) {
+
+                if (count == sensor_types.length - 2) {
+                    console.log("Deal with the different result of requests.");
+                    // Deal with the different result of requests
+                    // 1. No policies for all data requests.    -->   jump to /researcher
+                    if (empty_policy_num == sensor_types.length - 1) {
+                        return res.render('researcher', {title: user_id, valueOfId: user_id, valueOfMail: email, request_status: 2});
+                    }
+                    // 2. All requests are denied.              -->   jump to /researcher
+                    // 3. At last one request is accepted.      -->   jump to /download
+                    if (accepted_request_num == 0) {
+                        return res.render('researcher', {title: user_id, valueOfId: user_id, valueOfMail: email, request_status: 1});
+                    } else {
+                        // Store necessary information in cookie
+                        res.cookie("room_number", sqlParams[5], {path: '/'});
+                        res.cookie("start_date", sqlParams[6], {path: '/'});
+                        res.cookie("end_date", sqlParams[7], {path: '/'});
+                        res.cookie("sensor_cookie_accepted", accepted_cookie, {path: '/'});
+
+                        // Display the result(accepted/denied) on /download
+                        let table = "";
+                        let arr_accepted = accepted_cookie.split(",");
+                        let arr_denied = denied_cookie.split(",");
+                        console.log("Accepted:" + arr_accepted + "\nDenied: " + arr_denied);
+                        for(let i = 0; i < arr_accepted.length - 1; i++){
+                            table += "<tr>";
+                            table += "<td>" + arr_accepted[i] +"</td>";
+                            table += "<td>" + "Accepted" +"</td>";
+                            table += "</tr>";
+                        }
+                        for(let i = 0; i < arr_denied.length - 1; i++){
+                            table += "<tr>";
+                            table += "<td>" + arr_denied[i] +"</td>";
+                            table += "<td>" + "Denied" +"</td>";
+                            table += "</tr>";
+                        }
+                        console.log(table);
+                        return res.render('download', {valueOfID: user_id, all: table});
+                    }
+                }
+            });
+        })
+    }
 
 
-    function authorisation(callback) {
+    function authorisation(sensor, count, callback) {
 
         pool.getConnection((error, connection) => {
 
@@ -91,32 +148,43 @@ postRouter.post('/DataRequestForm', function (req, res) {
             if (error) throw error;
 
             //search the policy according to the location
-            var sql = 'SELECT id FROM policies WHERE location = "' + sqlParams[5] + '";';
+            var sql = 'SELECT * FROM policies WHERE location = "' + sqlParams[5] + '" AND data_req = "' + sensor +'";';
+            // var sql2 = 'SELECT * FROM policies WHERE location = "' + datalocation + '" AND data_req = "' + datarequired +'";';
             console.log(sql);
 
             connection.query(sql, function(err, result) {
 
                 if (err) {
-                    console.log('-------------------- Error --------------------');
+                    console.log('-------------------- Search error --------------------');
                     console.log(err);
-                    res.render('login', {flag: 1});
+                    throw err;
                 } else if (result.length == 0) {
-                    console.log('Error. No such policy for the room.');
-                    return res.render('researcher', {title: user_id, valueOfId: user_id, valueOfMail: email, request_status: 2});
+                    console.log(count + " : Error. No such policy for this kind of data.");
+                    let authorisation_state = "Denied";
+                    number_of_empty_policy++;
+                    console.log("number_of_empty_policy " + number_of_empty_policy);
+
+                    callback(number_of_empty_policy, number_of_accepted_request, authorisation_state);
                 } else {
-                    console.log('-------------------- result --------------------');
+                    console.log("-------------------- Result --------------------");
+                    let authorisation_state = "Denied";
                     let message = JSON.stringify(result);
                     message = JSON.parse(message);
                     console.log(message);
 
                     for (let i = 0; i < message.length; i++) {
-                        if (user_id == message[i].id) {
-                            marks = "Accepted";
+                        if (sqlParams[1] == String(message[i].role) && String(sqlParams[3]) == String(message[i].association)) {
+                            let policy_date_begin = message[i].date_begin.replace(/\-/g,'/');
+                            let policy_date_end = message[i].date_end.replace(/\-/g,'/');
+                            console.log("Policy: Date From " + policy_date_begin + " To " + policy_date_end);
+                            if (request_date_begin >= policy_date_begin && request_date_end <= policy_date_end) {
+                                authorisation_state = "Accepted";
+                                number_of_accepted_request++;
+                            }
                         }
                     }
-                    //sqlParams[10] = marks;
-                    console.log(marks);
-                    callback(marks);
+                    console.log(sensor + "' " + authorisation_state + " '");
+                    callback(number_of_empty_policy, number_of_accepted_request, authorisation_state);
                 }
                 console.log('-------------------- *************** --------------------\n\n');
             });
@@ -126,58 +194,42 @@ postRouter.post('/DataRequestForm', function (req, res) {
     }
 
 
-    function submitLog(authorisation_state) {
+    function submitLogAndSetCookies(sensor, count, authorisation_state, callback) {
 
         pool.getConnection((error, connection) => {
 
-            console.log("-------------------- Data Request: Get a db connection from the pool --------------------");
+            console.log("-------------------- " + count + " Data Request: Get a db connection from the pool --------------------");
             if (error) throw error;
 
             sqlParams[10] = authorisation_state;
+            sqlParams[9] = sensor;
 
-            for (let count = 0; count < sensor_types.length - 1; count++) {
-                console.log("Insert " + count + " : " + sensor_types[count]);
+            console.log("-------------------- " + count + " Data Request: Insert log of request -------------------- ");
+            let sql = 'INSERT INTO data_request_log (id, role, email, association, name, location, date_begin, date_end, reason, data_req, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            console.log(sql + ' ' + sqlParams);
 
-                sqlParams[9] = sensor_types[count];
+            connection.query(sql, sqlParams, function(err, result) {
 
-                console.log("-------------------- Data Request: Insert log of request -------------------- ");
-                let sql = 'INSERT INTO data_request_log (id, role, email, association, name, location, date_begin, date_end, reason, data_req, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-                console.log(sql + ' ' + sqlParams);
+                if (err) {
+                    console.log('-------------------- Insert Error --------------------');
+                    console.log(err.message);
+                    return;
+                } else {
+                    console.log('-------------------- Insert No.' + count + ' Successfully --------------------');
+                }
+                console.log('-------------------- *************** --------------------\n\n');
+            });
 
-                connection.query(sql, sqlParams, function(err, result) {
-
-                    if (err) {
-                        console.log('-------------------- Insert Error --------------------');
-                        console.log(err.message);
-                        return;
-                    } else {
-                        console.log('-------------------- Insert ' + count + ' Successfully --------------------');
-                    }
-                    console.log('-------------------- *************** --------------------\n\n');
-                });
-            }
-
-            //Accepted --> /download; Denied --> /researcher
             if (authorisation_state == "Accepted") {
                 connection.release();
                 console.log("-------------------- Data Request: Release the db connection --------------------");
-                for (let count = 0; count < sensor_types.length - 1; count++) {
-                    sensor_cookie = sensor_cookie + sensor_types[count] + ',';
-                }
-                console.log("Sensor_cookie: " + sensor_cookie);
-                res.cookie("room_number", sqlParams[5], {path: '/'});
-                res.cookie("start_date", sqlParams[6], {path: '/'});
-                res.cookie("end_date", sqlParams[7], {path: '/'});
-                res.cookie("sensor_type", sensor_cookie, {path: '/'});
-
-                console.log("-------------------- Requests Accepted -------------------- ");
-                return res.render('download', {valueOfID: user_id, valueOfResult: 'Data from ' + sqlParams[5] + " Accepted"});
+                sensor_cookie_accepted = sensor_cookie_accepted + sensor + ',';
             } else {
                 connection.release();
                 console.log("-------------------- Data Request: Release the db connection --------------------");
-                console.log("-------------------- Requests Denied -------------------- ");
-                return res.render('researcher', {title: user_id, valueOfId: user_id, valueOfMail: email, request_status: 1});
+                sensor_cookie_denied = sensor_cookie_denied + sensor + ',';
             }
+            callback(sensor_cookie_accepted, sensor_cookie_denied);
         });
     }
 })
@@ -219,115 +271,3 @@ function getResearcherInfo(name, callback) {
         console.log("-------------------- Data Request: Release the db connection --------------------");
     });
 }
-
-
-//
-// function isDate(dateString){
-//     if(dateString.trim()=="")return true;
-//     var r=dateString.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
-//     // var r=dateString.match(/^(\d{1,2})(-|\/)(\d{1,2})\2(\d{1,4})$/);
-//     if(r==null){
-//         alert("请输入格式正确的日期\n\r日期格式：dd-mm-yyyy\n\r例 如：2020-01-29\n\r");
-//         return false;
-//     }
-//     var d=new Date(r[1],r[3]-1,r[4]);
-//     var num = (d.getFullYear()==r[1]&&(d.getMonth()+1)==r[3]&&d.getDate()==r[4]);
-//     // var d=new Date(r[4],r[3]-1,r[1]);
-//     // var num = (d.getDate()==r[4]&&(d.getMonth()+1)==r[3]&&d.getFullYear()==r[1]);
-//     if(num==0){
-//         alert("请输入格式正确的日期\n\r日期格式：dd-mm-yyyy\n\r例 如：2020-01-29\n\r");
-//     }
-//     return (num!=0);
-// }
-//
-// function f(){
-//     var form = document.getElementById("formId");
-//     var role = document.getElementById("role").value;
-//     var firstName = document.getElementById("fname").value;
-//     var lastName = document.getElementById("lname").value;
-//     var eMail = document.getElementById("email").value;
-//     var association = document.getElementById("association").value;
-//
-//     var datalocation = document.getElementById("dlocation").value;
-//
-// }
-//
-//
-// //连接数据库，从表中取值判断
-// function rbac() {
-//     var role = document.getElementById(role).value;
-//     var datalocation = document.getElementById(datalocation).value;
-//     //select userId from user
-//     if(role==role&&datalocation==datalocation){
-//         //支持下载
-//     }
-//     else {
-//         alert("你没有资格访问该房间的数据");
-//     }
-// }
-//
-
-
-/*
-var mysql  = require('mysql');
-var bodyParser = require('body-parser');
-// 创建 application/x-www-form-urlencoded 编码解析
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
-const express = require('express');
-const path = require('path');
-const app = express();
-var cnt = 0;
-/!*****数据库配置*****!/
-var connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'xxx',
-    port: '3306',
-    database: 'StudentInfo',
-    useConnectionPooling:true
-});
-
-
-var addSql = 'INSERT INTO form(role,firstname,lastname,email,association,datarequired,datalocation,datechoose,reason) VALUES(?,?,?,?,?)';
-var addSqlParams=new Array(5);
-/!****web页面显示*****!/
-app.use(express.static(path.join(__dirname, 'public')));
-/!****web提交数据处理****!/
-app.post('/posttable', urlencodedParser, function (req, res) {
-    addSqlParams[0] = req.body.role;
-    addSqlParams[1] = req.body.firstname;
-    addSqlParams[2] = req.body.lastname;
-    addSqlParams[3] = req.body.email;
-    addSqlParams[4] = req.body.association;
-    addSqlParams[5] = req.body.datarequired;
-    addSqlParams[6] = req.body.datalocation;
-    addSqlParams[7] = req.body.datechoose;
-    addSqlParams[8] = req.body.datestring;
-    addSqlParams[9] = req.body.reason;
-
-    /!***数据库连接***!/
-//    connection.connect();
-    /!****插入数据*****!/
-    connection.query(addSql,addSqlParams,function (err, result) {
-        if(err){
-            //插入失败，返回错误信息
-            console.log('[INSERT ERROR] - ',err.message);
-            res.end(err.message+" ");
-        }else{
-            //插入成功则返回时间+success
-            console.log('insert success!');
-            res.end(new Date().toLocaleString()+':success');
-        }
-
-
-    });
-    cnt = cnt + 1;
-    console.log('insert success!');
-    res.end('success');
-});
-app.listen(8000, () => {
-    console.log('server listening at port 8000')
-});
-*/
-
-

@@ -33,7 +33,13 @@
                         <label for="result">Result</label>
                     </div>
                     <div class="col-70">
-                        <input type="text" id="result" name="result" placeholder="" value="<%= valueOfResult %>" readonly="readonly" disabled="true">
+                        <table style="margin-top: 10px; width: 70%; height: 50%" id="policy">
+                            <tr>
+                                <td>Data Request</td>
+                                <td>Result</td>
+                            </tr>
+                            <%- all %>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -53,7 +59,7 @@
         let start_date = getCookie("start_date");
         let end_date = getCookie("end_date");
         let room_number = getCookie("room_number");
-        let sensor_type = getCookie("sensor_type");
+        let sensor_type = getCookie("sensor_cookie_accepted");
 
         // window.alert(start_date + "\n" + end_date + "\n" + room_number + "\n" + sensor_type);
 
@@ -76,7 +82,7 @@
                 } else if (api_request.status == 400) {
                     window.alert("Error. Incorrect request parameters.");
                 } else {
-                    window.alert("There are some errors to download date about " + arrSensor[i]);
+                    window.alert("There are some errors to download data about " + arrSensor[i]);
                 }
             }
             api_request.send();

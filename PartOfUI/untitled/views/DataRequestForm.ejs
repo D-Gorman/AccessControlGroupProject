@@ -140,28 +140,10 @@
     <div class="pagesBottom"></div>
     <script>
         let failure = "<%= flag %>";
-        if(failure == 1) document.getElementById("show").innerText = "Warning: Please select the data that you need";
-        if(failure == 2) document.getElementById("show").innerText = "Warning: Start date should not be later than End date";
+        if(failure == 1) document.getElementById("show").innerText = "Warning: Please select the data that you need!";
+        if(failure == 2) document.getElementById("show").innerText = "Warning: Start date should not be later than End date!";
+        if(failure == 3) document.getElementById("show").innerText = "Warning: End date should not be later than Today!";
     </script>
-<!--    <script>-->
-<!--        function isDate(dateString){-->
-<!--            if(dateString.trim()=="")return true;-->
-<!--            // var r=dateString.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);-->
-<!--            var r=dateString.match(/^(\d{1,2})(-|\/)(\d{1,2})\2(\d{1,4})$/);-->
-<!--            if(r==null){-->
-<!--                alert("Invalid format of date.\n\rFormat：dd-mm-yyyy\n\rFor example：01-29-2020\n\r");-->
-<!--                return false;-->
-<!--            }-->
-<!--            var d=new Date(r[1],r[3]-1,r[4]);-->
-<!--            var num = (d.getFullYear()==r[1]&&(d.getMonth()+1)==r[3]&&d.getDate()==r[4]);-->
-<!--            // var d=new Date(r[4],r[3]-1,r[1]);-->
-<!--            // var num = (d.getDate()==r[4]&&(d.getMonth()+1)==r[3]&&d.getFullYear()==r[1]);-->
-<!--            if(num==0){-->
-<!--                alert("Invalid format of date.\n\rFormat：dd-mm-yyyy\n\rFor example：01-29-2020\n\r");-->
-<!--            }-->
-<!--            return (num!=0);-->
-<!--        }-->
-<!--    </script>-->
 </div>
 </body>
 </html>
