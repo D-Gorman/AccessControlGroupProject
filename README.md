@@ -58,3 +58,7 @@ Shared code repository for the group 2 security and resilience project on access
       + At last one request is accepted.      -->   jump to /download
 
 3. Add the sql file, showing the structure of the database.
+
+## Version 3.5
+1. Fix the appearance of /login and /jump
+2. Update database .sql file. Replace the row "password" with "hash_pwd" in table "loginInfo".
