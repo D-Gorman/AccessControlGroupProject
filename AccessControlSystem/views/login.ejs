@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="stylesheets/login.css"/>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <div class="contain">
+        <div class="loginTop"></div>
+        <div class="loginBody">
+            <div class="loginDiv">
+                <div class="loginIn"></div>
+                <form name="loginform" class="loginForm" id="loginForm" method="post">
+                    <ul>
+                        <li>
+                            <label for="userId">USERID</label>
+                        </li>
+                        <li>
+                            <input name="userId" type="text" class="loginText" value="" placeholder="What's your id:" maxlength="20" id="userId">
+                        </li>
+                        <li>
+                            <label for="password">PASSWORD</label>
+                        </li>
+                        <li>
+                            <input name="password" type="password" class="loginText" value="" placeholder="What's your password:" maxlength="20" id="password">
+                        </li>
+                        <li>
+                            <input name="continueBtn" type="submit" class="loginBtn" id="continueBtn" value="CONTINUE">
+                        </li>
+                    </ul>
+                    <div id="show" class="show"></div>
+                </form>
+            </div>
+        </div>
+        <div class="loginBottom"></div>
+    </div>
+    <script>
+        let failure = "<%= flag %>";
+        if(failure == 1) document.getElementById("show").innerText = "Login Failed！";
+        if(failure == 2) document.getElementById("show").innerText = "ID and PASSWORD cannot be null.";
+    </script>
+</body>
+</html>
