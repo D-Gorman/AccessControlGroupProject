@@ -3,12 +3,6 @@ const getRouter = express.Router();
 const postRouter = express.Router();
 
 const mysql = require('mysql');
-// var connection = mysql.createConnection({
-//     host: '127.0.0.1',
-//     user: 'root',
-//     password: 'mysql',
-//     database: 'loginInfo'
-// });
 
 const pool = mysql.createPool({
     connectionLimit: 100,
@@ -25,6 +19,7 @@ const crypto = require('crypto');
 
 
 /* Present the page of login  */
+/* Clear cookie */
 getRouter.get('/login', function(req, res) {
     res.clearCookie('authorized');
     res.clearCookie('dashboard');
@@ -41,50 +36,50 @@ postRouter.post('/login', function (req, res) {
     let name = req.body.userId;
     let pass = crypto.createHash("md5").update(req.body.password).digest("hex");
 
-    //if (strings.replace(/(^s*)|(s*$)/g, "").length ==0)
+    // Extract the valid and actual input string
     if (req.body.userId.replace(/(^s*)|(s*$)/g, "").length ==0 || req.body.password.replace(/(^s*)|(s*$)/g, "").length ==0) {
         console.log("UserId and password cannot be null.");
         res.render('login', {flag: 2});
         return;
     }
-    //var pass = req.body.password;
+
     console.log("userId = " + name);
     console.log("hash_pwd = " + pass);
 
+    // Get a connection with db from the pool
     pool.getConnection((error, connection) => {
 
         console.log("-------------------- Login in: Get a db connection from the pool --------------------");
         if (error) throw error;
 
-        //Search the database according to the userId.
-        var sql = 'SELECT hash_pwd, dashboard FROM login_info WHERE user_id = "' + name + '";';
+        // Search the database according to the userId.
+        let sql = 'SELECT hash_pwd, dashboard FROM login_info WHERE user_id = "' + name + '";';
         console.log(sql);
 
         connection.query(sql, function(err, result) {
 
             if (err) {
-                console.log('-------------------- **** Error **** --------------------');
+                console.log('-------------------- Error --------------------');
                 console.log(err);
                 res.render('login', {flag: 1});
             }else if (result.length == 0) {
                 console.log('Login Error: Please enter a correct userId.');
                 res.render('login', {flag: 1});
             } else {
-                console.log('-------------------- **** result **** --------------------');
-                //转换json
-                var message = JSON.stringify(result);
+                console.log('-------------------- Result --------------------');
+                let message = JSON.stringify(result);
                 message = JSON.parse(message);
                 console.log(message);
                 console.log(message[0].hash_pwd);
                 console.log(message[0].dashboard);
 
                 if (message[0].hash_pwd == pass) {
-                    console.log('-------------------- * Login Succeed * --------------------');
+                    console.log('-------------------- Login Succeed --------------------');
                     //res.cookie = "authorized=" + req.body.userId + "; path = /";
                     res.cookie("authorized", name, {path: '/'});
                     res.cookie("dashboard", message[0].dashboard, {path: '/'});
 
-                    //res.redirect("/occupant");
+                    // Identify the dashboard of the user.
                     if (message[0].dashboard == 'occupant' || message[0].dashboard == 'researcher') {
                         console.log('Redirect to /', message[0].dashboard);
                         res.redirect("/" + message[0].dashboard);

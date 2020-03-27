@@ -11,8 +11,10 @@ const pool = mysql.createPool({
     database:'usbaccess',
 });
 
+/* Present the page of User Access Log */
+/* Display the previous access log by the user */
 getRouter.get('/log', function (req, res) {
-    console.log('-------------------- Page of Occupant --------------------');
+    console.log('-------------------- Page of Log --------------------');
     if(req.cookies.authorized) {
         let name = req.cookies.authorized;
         let message = getLocationInfo(name, function(json) {
@@ -24,9 +26,8 @@ getRouter.get('/log', function (req, res) {
     }
 });
 
-exports.get = getRouter;
 
-
+/* Search the database, get the historical access log by this user */
 function getLocationInfo(name, callback) {
 
     pool.getConnection((error, connection) => {
@@ -34,8 +35,8 @@ function getLocationInfo(name, callback) {
         console.log("-------------------- Log: Get a db connection from the pool to search location --------------------");
         if (error) throw error;
 
-        //Search the database according to the userId.
-        var sql = 'SELECT * FROM data_request_log WHERE id = "' + name + '";';
+        // Search the database according to the userId.
+        let sql = 'SELECT * FROM data_request_log WHERE id = "' + name + '";';
         console.log(sql);
         connection.query(sql, function(err, result) {
 
@@ -48,10 +49,10 @@ function getLocationInfo(name, callback) {
                 callback("Empty record about the requests");
             } else {
                 console.log('-------------------- Location Information --------------------');
-                //转换json
                 let message = JSON.stringify(result);
-                //console.log(result);
+                // console.log(result);
                 message = JSON.parse(message);
+                // Fill data in table to display previous access policies
                 let str1 = "";
                 for(let i=0;i<message.length;i++){
                     str1 += "<tr>";
@@ -77,3 +78,5 @@ function getLocationInfo(name, callback) {
         console.log("-------------------- Log: Release the db connection --------------------");
     });
 }
+
+exports.get = getRouter;

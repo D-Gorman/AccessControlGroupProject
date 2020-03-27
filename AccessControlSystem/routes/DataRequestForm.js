@@ -11,6 +11,7 @@ const pool = mysql.createPool({
     database: 'usbaccess'
 });
 
+// Global variable
 let user_id;
 let role;
 let association;
@@ -19,11 +20,13 @@ let last_name;
 let email;
 
 
+/* Present the dashboard of researcher */
+/* Default: Display the user id, email and reserve a "status" to show the reason of failed request */
 getRouter.get('/DataRequestForm', function (req, res) {
     console.log('-------------------- GET: Page of DataRequest --------------------');
     if(req.cookies.authorized) {
         user_id = req.cookies.authorized;
-        var message = getResearcherInfo(user_id, function(json) {
+        let message = getResearcherInfo(user_id, function(json) {
             role = json.role;
             first_name = json.first_name;
             last_name = json.last_name;
@@ -35,6 +38,7 @@ getRouter.get('/DataRequestForm', function (req, res) {
 });
 
 
+/* Deal with the submit of requests */
 postRouter.post('/DataRequestForm', function (req, res) {
     console.log('-------------------- POST: Submit request in the Data Request Form Page --------------------');
 
@@ -58,19 +62,26 @@ postRouter.post('/DataRequestForm', function (req, res) {
     console.log("Purpose for requests:" + sqlParams[8]);
 
     // Seconds after 1970-01-01
+    // Compare the initial time and the end time
+    // Prevent the end time being earlier than the start time
     let request_date_begin = sqlParams[6].replace(/\-/g,'/');
     let request_date_end = sqlParams[7].replace(/\-/g,'/');
     if (Date.parse(request_date_begin) > Date.parse(request_date_end)) {
         console.log(Date.parse(request_date_begin) + " " + Date.parse(request_date_end));
         return res.render('DataRequestForm', {flag: 2, title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
     }
-    // Get the timestamp of right now.
+    // Get the timestamp of right now
+    // Compare the end time and today
+    // Prevent users from requesting data from the future
     let timestamp = Date.parse(new Date());
     if (Date.parse(request_date_end) > timestamp) {
         console.log("End date in request: " + Date.parse(request_date_end) + " <--> " + "Today : " + timestamp);
         return res.render('DataRequestForm', {flag: 3, title: user_id, valueOfID: user_id, valueOfRole: role, FirstName: first_name, LastName: last_name, valueOfMail: email, valueOfAss: association});
     }
 
+    // Set a default selection of checkbox: "." in DataRequestForm.ejs which is invisible and unchangeable.
+    // Prevent a situation when there is only one selection of checkbox, the string will be split into letters.
+    // Exclude cases where checkbox is not selected and issue a warning on the interface
     console.log("\nType of Data Requests: ");
     if (req.body.datarequired == '.') {
         console.log("-------------------- Warning: Please select the type of data --------------------");
@@ -90,12 +101,14 @@ postRouter.post('/DataRequestForm', function (req, res) {
     // Count of accepted data request.
     let number_of_accepted_request = 0;
 
+    // For each selection of data request, search the access control policies, make judgement and insert this record as log
     for (let count = 0; count < sensor_types.length - 1; count++) {
         console.log(count + " : Search access control policies for  " + sensor_types[count]);
 
         let message = authorisation(sensor_types[count], count, function(empty_policy_num, accepted_request_num, authorisation_state) {
             submitLogAndSetCookies(sensor_types[count], count, authorisation_state, function (accepted_cookie, denied_cookie) {
 
+                // after the last request finished, decide what to do next according to total result
                 if (count == sensor_types.length - 2) {
                     console.log("Deal with the different result of requests.");
                     // Deal with the different result of requests
@@ -104,7 +117,7 @@ postRouter.post('/DataRequestForm', function (req, res) {
                         return res.render('researcher', {title: user_id, valueOfId: user_id, valueOfMail: email, request_status: 2});
                     }
                     // 2. All requests are denied.              -->   jump to /researcher
-                    // 3. At last one request is accepted.      -->   jump to /download
+                    // 3. At least one request is accepted.      -->   jump to /download
                     if (accepted_request_num == 0) {
                         return res.render('researcher', {title: user_id, valueOfId: user_id, valueOfMail: email, request_status: 1});
                     } else {
@@ -147,8 +160,8 @@ postRouter.post('/DataRequestForm', function (req, res) {
             console.log("-------------------- Data Request: Get a db connection from the pool --------------------");
             if (error) throw error;
 
-            //search the policy according to the location
-            var sql = 'SELECT * FROM policies WHERE location = "' + sqlParams[5] + '" AND data_req = "' + sensor +'";';
+            // search the policy according to the location
+            let sql = 'SELECT * FROM policies WHERE location = "' + sqlParams[5] + '" AND data_req = "' + sensor +'";';
             // var sql2 = 'SELECT * FROM policies WHERE location = "' + datalocation + '" AND data_req = "' + datarequired +'";';
             console.log(sql);
 
@@ -235,10 +248,7 @@ postRouter.post('/DataRequestForm', function (req, res) {
 })
 
 
-exports.get = getRouter;
-exports.post = postRouter;
-
-
+/* Connect with database, search the information about the user */
 function getResearcherInfo(name, callback) {
 
     pool.getConnection((error, connection) => {
@@ -246,8 +256,8 @@ function getResearcherInfo(name, callback) {
         console.log("-------------------- Data Request: Get a db connection from the pool to search Researcher Information --------------------");
         if (error) throw error;
 
-        //Search the database according to the userId.
-        var sql = 'SELECT * FROM researcher WHERE user_id = "' + name + '";';
+        // Search the database according to the userId.
+        let sql = 'SELECT * FROM researcher WHERE user_id = "' + name + '";';
         console.log(sql);
         connection.query(sql, function(err, result) {
 
@@ -260,7 +270,7 @@ function getResearcherInfo(name, callback) {
                 return;
             } else {
                 console.log('-------------------- Researcher Information --------------------');
-                var message = JSON.stringify(result);
+                let message = JSON.stringify(result);
                 message = JSON.parse(message);
                 console.log(message);
                 callback(message[0]);
@@ -271,3 +281,7 @@ function getResearcherInfo(name, callback) {
         console.log("-------------------- Data Request: Release the db connection --------------------");
     });
 }
+
+
+exports.get = getRouter;
+exports.post = postRouter;

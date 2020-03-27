@@ -11,13 +11,16 @@ const pool = mysql.createPool({
     database: 'usbaccess'
 });
 
+// Global variables
 let dataLocation;
 
+/* Present the page of Update Policies */
+/* Default: Display the location (user's office room number), which can not be changed */
 getRouter.get('/UpDatePolicy', function (req, res) {
     console.log('-------------------- GET: Page of UpDatePolicy --------------------');
     if(req.cookies.authorized) {
         let user_id = req.cookies.authorized;
-        var message = getOccupantInfo(user_id, function(json) {
+        let message = getOccupantInfo(user_id, function(json) {
             let role = json.role;
             dataLocation = json.location;
             res.render('UpDatePolicy', {valueOfLoc: dataLocation, flag: 0});
@@ -25,13 +28,15 @@ getRouter.get('/UpDatePolicy', function (req, res) {
     }
 });
 
+
+/* Deal with the submit of updating policies */
 postRouter.post('/UpDatePolicy', function (req, res) {
     console.log(':)');
     if(req.cookies.authorized) {
         console.log(':)))))')
 
         let sqlParams = new Array(7);
-        //sets values for insertion
+        // sets values for insertion
         sqlParams[0] = req.cookies.authorized;
         sqlParams[1] = dataLocation;
         sqlParams[2] = req.body.association;
@@ -39,14 +44,19 @@ postRouter.post('/UpDatePolicy', function (req, res) {
         sqlParams[4] = req.body.date_start;
         sqlParams[5] = req.body.date_end;
 
-        //Seconds after 1970-01-01
-        let date1_s=sqlParams[4].replace(/\-/g,'/');
-        let date2_s=sqlParams[5].replace(/\-/g,'/');
+        // Seconds after 1970-01-01
+        // Compare the initial time and the end time
+        // Prevent the end time being earlier than the start time
+        let date1_s = sqlParams[4].replace(/\-/g,'/');
+        let date2_s = sqlParams[5].replace(/\-/g,'/');
         if (Date.parse(date1_s) > Date.parse(date2_s)) {
             console.log(Date.parse(date1_s) + " " + Date.parse(date2_s));
             return res.render('UpDatePolicy', {valueOfLoc: dataLocation, flag: 2});
         }
 
+        // Set a default selection of checkbox: "." in UpdatePolicy.ejs which is invisible and unchangeable.
+        // Prevent a situation when there is only one selection of checkbox, the string will be split into letters.
+        // Exclude cases where checkbox is not selected and issue a warning on the interface
         console.log("\nType of Data Policies: ");
         if (req.body.datarequired == '.') {
             console.log("-------------------- Warning: Please select the type of data --------------------");
@@ -57,6 +67,10 @@ postRouter.post('/UpDatePolicy', function (req, res) {
             console.log(count + " : " + selections[count]);
         }
 
+        // For each selections of the checkbox
+        // Search relevant policies in database
+        // When there is no relevant policy about this type of data, insert new one
+        // When there is a historical record, update the data
         for (let count = 0; count < selections.length - 1; count++) {
             console.log("-------------------- --------------------");
             console.log(count + " : Set policies for " + selections[count]);
@@ -67,6 +81,8 @@ postRouter.post('/UpDatePolicy', function (req, res) {
         }
         return res.redirect('/occupant');
 
+
+        // search the database, find out whether these is matching policy set by this user for this kind of data
         function matchPolicy(selections, callback) {
 
             pool.getConnection((error, connection) => {
@@ -76,7 +92,7 @@ postRouter.post('/UpDatePolicy', function (req, res) {
                 //sqlParams[6] = selections; //these are the data requests
                 console.log(sqlParams);
 
-                //look for a matching policy in the table
+                //look for a matching policy from the database
                 let findPolicySql = 'SELECT * FROM policies WHERE id = "' + req.cookies.authorized + '" AND data_req = "' + selections + '";';
                 console.log(findPolicySql);
                 connection.query(findPolicySql, function(err, result) {
@@ -99,6 +115,8 @@ postRouter.post('/UpDatePolicy', function (req, res) {
             });
         }
 
+
+        // According to the call-back result, decide to insert or update policy
         function insertOrUpdate(selections, count, result) {
 
             if (result == "INSERT") {
@@ -131,10 +149,10 @@ postRouter.post('/UpDatePolicy', function (req, res) {
                     console.log("-------------------- " + count + " UpDatePolicy: Get a db connection from the pool to update policy--------------------");
                     if (error) throw error;
 
-                    //var updateSql = 'UPDATE policies SET (type, location, date_begin, date_end) VALUES (?, ?, ?, ?)';
+                    // var updateSql = 'UPDATE policies SET (type, location, date_begin, date_end) VALUES (?, ?, ?, ?)';
                     let updateSql = "UPDATE policies SET location = ?, association = ?, role = ?, date_begin = ?, date_end = ? WHERE id = ? AND data_req = ?";
 
-                    //set params for updating - slightly different
+                    // set params for updating - slightly different
                     let sqlUpdate = new Array(7);
                     sqlUpdate[0] = sqlParams[1];
                     sqlUpdate[1] = sqlParams[2];
@@ -168,6 +186,7 @@ postRouter.post('/UpDatePolicy', function (req, res) {
 });
 
 
+/* Connect with database, search the user's information */
 function getOccupantInfo(name, callback) {
 
     pool.getConnection((error, connection) => {
@@ -200,5 +219,6 @@ function getOccupantInfo(name, callback) {
         console.log("-------------------- UpDatePolicy: Release the db connection --------------------");
     });
 }
+
 exports.get = getRouter;
 exports.post = postRouter;

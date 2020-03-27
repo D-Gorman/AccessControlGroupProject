@@ -10,7 +10,8 @@ const pool = mysql.createPool({
     database: 'usbaccess'
 });
 
-
+/* Present the dashboard of occupant */
+/* Default: Display the information about the id, location and previous policies of this user */
 getRouter.get('/occupant', function (req, res) {
     console.log('-------------------- Page of Occupant --------------------');
     console.log(req.cookies);
@@ -31,9 +32,8 @@ getRouter.get('/occupant', function (req, res) {
     }
 });
 
-exports.get = getRouter;
 
-
+/* Connect with database, search the information about user's location */
 function getLocationInfo(name, callback) {
 
     pool.getConnection((error, connection) => {
@@ -55,7 +55,6 @@ function getLocationInfo(name, callback) {
                 return;
             } else {
                 console.log('-------------------- Succeed: Get Location Information --------------------');
-                //转换json
                 let message = JSON.stringify(result);
                 message = JSON.parse(message);
                 console.log(message);
@@ -69,7 +68,7 @@ function getLocationInfo(name, callback) {
 }
 
 
-
+/* Connect with database, search the information about user's previous policies (maybe empty) */
 function getPoliciesInfo(name, callback) {
 
     pool.getConnection((error, connection) => {
@@ -92,10 +91,10 @@ function getPoliciesInfo(name, callback) {
                 callback("Empty record about the policy");
             } else {
                 console.log('-------------------- Policies --------------------');
-                //转换json
                 let message = JSON.stringify(result);
                 console.log(result);
                 message = JSON.parse(message);
+                // Fill data in table to display previous access policies
                 let str1 = "";
                 for(let i = 0; i < message.length; i++){
                     str1 += "<tr>";
@@ -116,3 +115,5 @@ function getPoliciesInfo(name, callback) {
         console.log("-------------------- Occupant: Release the db connection --------------------");
     });
 }
+
+exports.get = getRouter;
