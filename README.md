@@ -62,3 +62,8 @@ Shared code repository for the group 2 security and resilience project on access
 ## Version 3.5
 1. Fix the appearance of /login and /jump
 2. Update database .sql file. Replace the row "password" with "hash_pwd" in table "loginInfo".
+
+## Version 3.6
+1. Change the user of database connection pool, root --> acs
+2. Add the process to drop and create usbaccess database in .sql file.
+3. Add the manual/test doc.
