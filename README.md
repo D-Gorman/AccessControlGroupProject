@@ -66,4 +66,7 @@ Shared code repository for the group 2 security and resilience project on access
 ## Version 3.6
 1. Change the user of database connection pool, root --> acs
 2. Add the process to drop and create usbaccess database in .sql file.
-3. Add the manual/test doc.
+3. Add the user manual.
+
+## Official Version
+1. Add the code comment.
