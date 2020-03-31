@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="stylesheets/DataForm.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/MainPageNavigationBar.css" />
+    <title>Occupant - Policies</title>
+</head>
+<body>
+<div class="contain">
+    <div class="container-fluid">
+        <ul>
+            <li class="active"><li><a href="occupant">Occupant</a></li>
+            <li><a href="UpDatePolicy">Update Policies</a></li>
+            <li style="float:right"><a href="logout">Logout</a></li>
+        </ul>
+    </div>
+    <div class="pagesBody">
+        <form id="formId" action="" method="post">
+            <div class="row">
+                <div class="col-30">
+                    <label for="dataLocation">Data location:</label>
+                </div>
+                <div class="col-70" style="padding-top: 12px">
+                    <input type="text" id="dataLocation" name="dataLocation" placeholder="" value="<%= valueOfLoc %>" readonly="readonly" disabled="true">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-30">
+                    <label>Data available:</label>
+                </div>
+                <div class="col-70">
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="co2"/>CO2</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="occupancy-sensor"/>Occupancy Sensor</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="relative-humidity"/>Relative Humidity</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="room-brightness"/>Room Brightness</label>
+                    <label><input type="checkbox" name="datarequired" id="datarequired" value="room-temperature"/>Room Temperature</label>
+                    <div class="divUnder">
+                        <input type="checkbox" name="datarequired" id="datarequired" value="." checked="checked" style="display: none"/>
+                        <div class="divUpper">
+                            <input type="checkbox" disabled="true" style="display: none"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="association">Permitted associations:</label>
+                </div>
+                <div class="col-70" style="padding-top: 12px">
+                    <select id="association" name="association">
+                        <option value="school">School</option>
+                        <option value="university">University</option>
+                        <option value="company">Company</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="association">Permitted roles:</label>
+                </div>
+                <div class="col-70" style="padding-top: 12px">
+                    <select id="role" name="role">
+                        <option value="staff">Staff</option>
+                        <option value="student">Student</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-30">
+                    <label for="datechoose">Date availability:</label>
+                </div>
+                <div class="col-70" style="margin-top: 15px;">
+                    <input id="date_start" name="date_start" type="date" placeholder="YYYY-MM-DD" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" min="2000-01-01" max="2100-01-01" required/><span class="validity"></span>
+                    -
+                    <input id="date_end" name="date_end" type="date" placeholder="YYYY-MM-DD" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" min="2000-01-01" max="2100-01-01" required/><span class="validity"></span>
+                </div>
+            </div>
+            <div class="row" style="text-align: center">
+                <input type="submit" value="Update">
+                <div id="warning" class="show"></div>
+            </div>
+        </form>
+    </div>
+    <div class="pagesBottom"></div>
+    <script>
+        let failure = "<%= flag %>";
+        if(failure == 1) document.getElementById("warning").innerText = "Warning: Please select the data that you need";
+        if(failure == 2) document.getElementById("warning").innerText = "Warning: Start date should not be later than End date";
+        if(failure == 3) document.getElementById("warning").innerText = "Warning: End date should not be later than Today!";
+    </script>
+</div>
+</body>
+</html>

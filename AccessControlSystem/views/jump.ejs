@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PageOfJump</title>
+    <link rel='stylesheet' href='/stylesheets/jump.css'/>
+</head>
+<body>
+<div class="contain">
+    <div class="pagesTop">
+        <h1>Welcome, <%= title %></h1>
+    </div>
+    <div class="pagesBody">
+        <form name="jumpForm" class="jumpForm" id="jumpForm" method="GET">
+            <div class="display_flex">
+                <input type="button" value="Jump To Occupant" class="selectionBtn" id="leftBtn" onclick="window.location.href='occupant'">
+                <input type="button" value="Jump To Researcher" class="selectionBtn" id="rightBtn" onclick="window.location.href='researcher'">
+            </div>
+        </form>
+    </div>
+    <div class="pagesBottom"></div>
+</div>
+</body>
+</html>

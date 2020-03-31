@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--    <meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="stylesheets/MainPageNavigationBar.css" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pagesOfRole.css" />
+    <title>Researcher: <%= title %> </title>
+</head>
+<body>
+<div class="contain">
+    <div class="container-fluid">
+        <ul>
+            <li class="active"><li><a href="researcher">Researcher</a></li>
+            <li class="active"><a href="DataRequestForm">Data Request Form Page</a></li>
+            <li><a href="log">Logging</a></li>
+            <li style="float:right"><a href="logout">Logout</a></li>
+        </ul>
+    </div>
+    <div class="pagesBody">
+        <form name="infoForm" class="infoForm" id="infoForm" method="GET">
+            <dev class="left">
+                <div class="firstCols">
+                    <label>UserId</label>
+                </div>
+                <div class="otherCols">
+                    <label>Email</label>
+                </div>
+                <div class="otherCols">
+                    <label>Status</label>
+                </div>
+            </dev>
+            <dev class="right">
+                <div class="firstCols">
+                    <h1><%= valueOfId %></h1>
+                </div>
+                <div class="otherCols">
+                    <h1><%= valueOfMail %></h1>
+                </div>
+                <div class="otherCols" id="status" style="color: red"></div>
+            </dev>
+        </form>
+    </div>
+    <div class="pagesBottom"></div>
+</div>
+<script>
+    let r_status = "<%= request_status %>";
+    if (r_status == 0) document.getElementById("status").innerText = "  ";
+    if (r_status == 1) document.getElementById("status").innerText = "Requests Denied";
+    if (r_status == 2) document.getElementById("status").innerText = "No policies for these data. Your requests are denied.";
+</script>
+</body>
+</html>
